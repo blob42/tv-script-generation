@@ -11786,7 +11786,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[64]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -11817,7 +11817,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">view_sentence_range</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -11882,6 +11882,414 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>lspci
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
+00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+00:01.1 IDE interface: Intel Corporation 82371SB PIIX3 IDE [Natoma/Triton II]
+00:01.3 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 01)
+00:02.0 VGA compatible controller: Cirrus Logic GD 5446
+00:03.0 VGA compatible controller: NVIDIA Corporation GK104GL [GRID K520] (rev a1)
+00:1f.0 Unassigned class [ff80]: XenSource, Inc. Xen Platform Device (rev 01)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Exploring-Sentence-Lengths">Exploring Sentence Lengths<a class="anchor-link" href="#Exploring-Sentence-Lengths">&#182;</a></h4><p>Find sentence length average to use it as the RRN sequence length</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">bokeh.charts</span> <span class="k">import</span> <span class="n">Histogram</span><span class="p">,</span> <span class="n">output_notebook</span><span class="p">,</span> <span class="n">show</span>
+
+<span class="n">output_notebook</span><span class="p">()</span>
+
+<span class="n">sentences</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">sent_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="mi">81</span><span class="p">:]))</span>
+<span class="n">sent_c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+<span class="c1"># Get average length</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+    <span class="n">sent_c</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+    
+<span class="n">s_lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sent_c</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">s_lengths</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;sentence lengths&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">show</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean of sentences length is </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s_lengths</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt"></div>
+
+
+<div class="output_html rendered_html output_subarea ">
+
+    <div class="bk-root">
+        <a href="http://bokeh.pydata.org" target="_blank" class="bk-logo bk-logo-small bk-logo-notebook"></a>
+        <span id="a1d47867-3c6a-4b12-b791-9b6e6f68b735">Loading BokehJS ...</span>
+    </div>
+</div>
+
+</div>
+
+<div class="output_area">
+<div class="prompt"></div>
+
+
+
+
+<div id="9cd3a079-6680-4043-87b3-4b71f4dea7b1"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#9cd3a079-6680-4043-87b3-4b71f4dea7b1');
+
+(function(global) {
+  function now() {
+    return new Date();
+  }
+
+  var force = true;
+
+  if (typeof (window._bokeh_onload_callbacks) === "undefined" || force === true) {
+    window._bokeh_onload_callbacks = [];
+    window._bokeh_is_loading = undefined;
+  }
+
+
+  
+  if (typeof (window._bokeh_timeout) === "undefined" || force === true) {
+    window._bokeh_timeout = Date.now() + 5000;
+    window._bokeh_failed_load = false;
+  }
+
+  var NB_LOAD_WARNING = {'data': {'text/html':
+     "<div style='background-color: #fdd'>\n"+
+     "<p>\n"+
+     "BokehJS does not appear to have successfully loaded. If loading BokehJS from CDN, this \n"+
+     "may be due to a slow or bad network connection. Possible fixes:\n"+
+     "</p>\n"+
+     "<ul>\n"+
+     "<li>re-rerun `output_notebook()` to attempt to load from CDN again, or</li>\n"+
+     "<li>use INLINE resources instead, as so:</li>\n"+
+     "</ul>\n"+
+     "<code>\n"+
+     "from bokeh.resources import INLINE\n"+
+     "output_notebook(resources=INLINE)\n"+
+     "</code>\n"+
+     "</div>"}};
+
+  function display_loaded() {
+    if (window.Bokeh !== undefined) {
+      document.getElementById("a1d47867-3c6a-4b12-b791-9b6e6f68b735").textContent = "BokehJS successfully loaded.";
+    } else if (Date.now() < window._bokeh_timeout) {
+      setTimeout(display_loaded, 100)
+    }
+  }
+
+  function run_callbacks() {
+    window._bokeh_onload_callbacks.forEach(function(callback) { callback() });
+    delete window._bokeh_onload_callbacks
+    console.info("Bokeh: all callbacks have finished");
+  }
+
+  function load_libs(js_urls, callback) {
+    window._bokeh_onload_callbacks.push(callback);
+    if (window._bokeh_is_loading > 0) {
+      console.log("Bokeh: BokehJS is being loaded, scheduling callback at", now());
+      return null;
+    }
+    if (js_urls == null || js_urls.length === 0) {
+      run_callbacks();
+      return null;
+    }
+    console.log("Bokeh: BokehJS not loaded, scheduling load and callback at", now());
+    window._bokeh_is_loading = js_urls.length;
+    for (var i = 0; i < js_urls.length; i++) {
+      var url = js_urls[i];
+      var s = document.createElement('script');
+      s.src = url;
+      s.async = false;
+      s.onreadystatechange = s.onload = function() {
+        window._bokeh_is_loading--;
+        if (window._bokeh_is_loading === 0) {
+          console.log("Bokeh: all BokehJS libraries loaded");
+          run_callbacks()
+        }
+      };
+      s.onerror = function() {
+        console.warn("failed to load library " + url);
+      };
+      console.log("Bokeh: injecting script tag for BokehJS library: ", url);
+      document.getElementsByTagName("head")[0].appendChild(s);
+    }
+  };var element = document.getElementById("a1d47867-3c6a-4b12-b791-9b6e6f68b735");
+  if (element == null) {
+    console.log("Bokeh: ERROR: autoload.js configured with elementid 'a1d47867-3c6a-4b12-b791-9b6e6f68b735' but no matching script tag was found. ")
+    return false;
+  }
+
+  var js_urls = ["https://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js", "https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.4.min.js"];
+
+  var inline_js = [
+    function(Bokeh) {
+      Bokeh.set_log_level("info");
+    },
+    
+    function(Bokeh) {
+      
+      document.getElementById("a1d47867-3c6a-4b12-b791-9b6e6f68b735").textContent = "BokehJS is loading...";
+    },
+    function(Bokeh) {
+      console.log("Bokeh: injecting CSS: https://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css");
+      Bokeh.embed.inject_css("https://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css");
+      console.log("Bokeh: injecting CSS: https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.4.min.css");
+      Bokeh.embed.inject_css("https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.4.min.css");
+    }
+  ];
+
+  function run_inline_js() {
+    
+    if ((window.Bokeh !== undefined) || (force === true)) {
+      for (var i = 0; i < inline_js.length; i++) {
+        inline_js[i](window.Bokeh);
+      }if (force === true) {
+        display_loaded();
+      }} else if (Date.now() < window._bokeh_timeout) {
+      setTimeout(run_inline_js, 100);
+    } else if (!window._bokeh_failed_load) {
+      console.log("Bokeh: BokehJS failed to load within specified timeout.");
+      window._bokeh_failed_load = true;
+    } else if (force !== true) {
+      var cell = $(document.getElementById("a1d47867-3c6a-4b12-b791-9b6e6f68b735")).parents('.cell').data().cell;
+      cell.output_area.append_execute_result(NB_LOAD_WARNING)
+    }
+
+  }
+
+  if (window._bokeh_is_loading === 0) {
+    console.log("Bokeh: BokehJS loaded, going straight to plotting");
+    run_inline_js();
+  } else {
+    load_libs(js_urls, function() {
+      console.log("Bokeh: BokehJS plotting callback run at", now());
+      run_inline_js();
+    });
+  }
+}(this));
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+<div class="prompt"></div>
+
+
+<div class="output_html rendered_html output_subarea ">
+
+
+    <div class="bk-root">
+        <div class="bk-plotdiv" id="e6d57401-77d4-4f94-812f-47bd9fad17a0"></div>
+    </div>
+<script type="text/javascript">
+  
+  (function(global) {
+    function now() {
+      return new Date();
+    }
+  
+    var force = false;
+  
+    if (typeof (window._bokeh_onload_callbacks) === "undefined" || force === true) {
+      window._bokeh_onload_callbacks = [];
+      window._bokeh_is_loading = undefined;
+    }
+  
+  
+    
+    if (typeof (window._bokeh_timeout) === "undefined" || force === true) {
+      window._bokeh_timeout = Date.now() + 0;
+      window._bokeh_failed_load = false;
+    }
+  
+    var NB_LOAD_WARNING = {'data': {'text/html':
+       "<div style='background-color: #fdd'>\n"+
+       "<p>\n"+
+       "BokehJS does not appear to have successfully loaded. If loading BokehJS from CDN, this \n"+
+       "may be due to a slow or bad network connection. Possible fixes:\n"+
+       "</p>\n"+
+       "<ul>\n"+
+       "<li>re-rerun `output_notebook()` to attempt to load from CDN again, or</li>\n"+
+       "<li>use INLINE resources instead, as so:</li>\n"+
+       "</ul>\n"+
+       "<code>\n"+
+       "from bokeh.resources import INLINE\n"+
+       "output_notebook(resources=INLINE)\n"+
+       "</code>\n"+
+       "</div>"}};
+  
+    function display_loaded() {
+      if (window.Bokeh !== undefined) {
+        document.getElementById("e6d57401-77d4-4f94-812f-47bd9fad17a0").textContent = "BokehJS successfully loaded.";
+      } else if (Date.now() < window._bokeh_timeout) {
+        setTimeout(display_loaded, 100)
+      }
+    }
+  
+    function run_callbacks() {
+      window._bokeh_onload_callbacks.forEach(function(callback) { callback() });
+      delete window._bokeh_onload_callbacks
+      console.info("Bokeh: all callbacks have finished");
+    }
+  
+    function load_libs(js_urls, callback) {
+      window._bokeh_onload_callbacks.push(callback);
+      if (window._bokeh_is_loading > 0) {
+        console.log("Bokeh: BokehJS is being loaded, scheduling callback at", now());
+        return null;
+      }
+      if (js_urls == null || js_urls.length === 0) {
+        run_callbacks();
+        return null;
+      }
+      console.log("Bokeh: BokehJS not loaded, scheduling load and callback at", now());
+      window._bokeh_is_loading = js_urls.length;
+      for (var i = 0; i < js_urls.length; i++) {
+        var url = js_urls[i];
+        var s = document.createElement('script');
+        s.src = url;
+        s.async = false;
+        s.onreadystatechange = s.onload = function() {
+          window._bokeh_is_loading--;
+          if (window._bokeh_is_loading === 0) {
+            console.log("Bokeh: all BokehJS libraries loaded");
+            run_callbacks()
+          }
+        };
+        s.onerror = function() {
+          console.warn("failed to load library " + url);
+        };
+        console.log("Bokeh: injecting script tag for BokehJS library: ", url);
+        document.getElementsByTagName("head")[0].appendChild(s);
+      }
+    };var element = document.getElementById("e6d57401-77d4-4f94-812f-47bd9fad17a0");
+    if (element == null) {
+      console.log("Bokeh: ERROR: autoload.js configured with elementid 'e6d57401-77d4-4f94-812f-47bd9fad17a0' but no matching script tag was found. ")
+      return false;
+    }
+  
+    var js_urls = [];
+  
+    var inline_js = [
+      function(Bokeh) {
+        (function() {
+          var fn = function() {
+            var docs_json = {"9f84cecc-8ae3-424e-8008-c4f2108b2e40":{"roots":{"references":[{"attributes":{"data_source":{"id":"fdaeaceb-0288-46c0-a3ed-cc8e5329d5fc","type":"ColumnDataSource"},"glyph":{"id":"c60cc52f-8af6-4a0e-8f95-98660c27806b","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"46c7b025-d143-4c0a-aad3-ec3ba8ecd967","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"a6e61952-558e-4f91-8773-7122b3d8490f","type":"Rect"},{"attributes":{"data_source":{"id":"62753b64-cb80-435c-9f49-f02f92ea10ab","type":"ColumnDataSource"},"glyph":{"id":"7bd3db7f-ca82-4af9-8ae4-932205f39a77","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"68605d7e-c637-42e9-a2b2-e979863f1dca","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(25.040000, 27.600000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[57.0],"label":["(25.040000, 27.600000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["26.32"],"y":[28.5]}},"id":"61883ba6-7728-4d19-8e42-f2b9ccf02545","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"5d178311-517a-4c92-93a4-0b4a1918cbaa","type":"ColumnDataSource"},"glyph":{"id":"97178744-60f4-497f-a8db-df41897cb3ec","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"f4f4a97e-ae8d-41ae-ba25-7805ae6e7955","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(50.640000, 53.200000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[2.0],"label":["(50.640000, 53.200000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["51.92"],"y":[1.0]}},"id":"76f24404-d5c1-4726-a6f6-c842fe71d574","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(89.040000, 91.600000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(89.040000, 91.600000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["90.32"],"y":[0.0]}},"id":"134495f4-8520-45ad-ba70-e6b149b727a4","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"7afb01b6-44e2-4243-8821-5e5ba1f2dc7f","type":"ColumnDataSource"},"glyph":{"id":"ed6b2dc8-cf08-4d3c-af21-779b91ba087e","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"d8de2099-da01-457b-b66d-f201e63a3cc2","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"bf00b15f-04e2-4cb7-935c-ccbd195caea1","type":"ColumnDataSource"},"glyph":{"id":"9a70bd68-22a8-4e19-bd94-d632c7837a47","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"6476ec4f-262b-4548-8d5e-9e3aa89a5e30","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(71.120000, 73.680000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(71.120000, 73.680000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["72.4"],"y":[0.5]}},"id":"360493dd-4ef0-40df-9ad1-3416985980a1","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"27ed2932-debe-461a-afa2-7f8125bd038f","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(40.400000, 42.960000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[8.0],"label":["(40.400000, 42.960000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["41.68"],"y":[4.0]}},"id":"3b91e3d9-7e03-4cac-9d11-7a3754381c8f","type":"ColumnDataSource"},{"attributes":{"axis_label":"Count( X )","formatter":{"id":"b30cd8c9-c534-4c22-84bc-b3902cade211","type":"BasicTickFormatter"},"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"},"ticker":{"id":"8ab847ed-fb0b-4e7c-b2ec-d7d2b0e1cc9b","type":"BasicTicker"}},"id":"56e1bb16-fc6f-40e0-becd-71a8872d9e65","type":"LinearAxis"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"7009ab47-3809-427f-8ea3-3b9205dfeb63","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(12.240000, 14.800000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[581.0],"label":["(12.240000, 14.800000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000005],"x":["13.52"],"y":[290.5]}},"id":"3da62201-1a25-469f-abfe-12d2446026d7","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"80e8bf4a-1074-42c1-9455-b62754415aa1","type":"Rect"},{"attributes":{"data_source":{"id":"0b9b6621-2b33-4b0b-8476-7e8e9de82fb1","type":"ColumnDataSource"},"glyph":{"id":"97aad34a-ae13-4cc5-b6f9-0006366c521f","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"53da2b5c-fb54-461d-97c1-3bed79e30940","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(96.720000, 99.280000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(96.720000, 99.280000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["98.0"],"y":[0.0]}},"id":"1e76ea4b-1912-4cb7-8857-44bac35c544a","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"5b004cc5-cc8a-4120-a5a0-9b4ddb009e38","type":"Rect"},{"attributes":{"data_source":{"id":"0dd7c353-f1c7-4d13-9cf0-adf6fdfb19b0","type":"ColumnDataSource"},"glyph":{"id":"5d1f6649-e399-432f-a4dc-19ead6a44d39","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"6ea78de2-d897-497a-b67b-6e307240eead","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(58.320000, 60.880000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[2.0],"label":["(58.320000, 60.880000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["59.6"],"y":[1.0]}},"id":"6b6dcc39-8c3d-4349-80a0-6b3502c40c42","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"a483e3ba-1ddf-4ffd-aea6-e94e618ad690","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(86.480000, 89.040000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(86.480000, 89.040000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["87.76"],"y":[0.0]}},"id":"1a63a0b8-1a2e-48fc-a1dd-94875c2a3637","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"01574f78-a558-46a6-82f7-8e9d226ed450","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"9b87fa67-fc83-4fd2-a6f6-bdf7da4b81d2","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(91.600000, 94.160000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(91.600000, 94.160000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999988],"x":["92.88"],"y":[0.0]}},"id":"0d505469-40f0-49d1-8373-94ae32e8eeca","type":"ColumnDataSource"},{"attributes":{"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"1a4a633c-13b4-43d5-9193-1c69dc90dadd","type":"HelpTool"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"7bd3db7f-ca82-4af9-8ae4-932205f39a77","type":"Rect"},{"attributes":{"data_source":{"id":"afc886b4-f0e3-4052-851d-4c683d18c35a","type":"ColumnDataSource"},"glyph":{"id":"cd043fcf-1752-405b-9bba-8f4fe1c47f39","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"f9b8acab-91ed-4366-9ec8-0e62d29075c3","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"97178744-60f4-497f-a8db-df41897cb3ec","type":"Rect"},{"attributes":{"data_source":{"id":"6b6dcc39-8c3d-4349-80a0-6b3502c40c42","type":"ColumnDataSource"},"glyph":{"id":"a8dc7d55-1c41-4169-b424-3557015ed694","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"2c460e7e-e565-4b47-9fee-0c8fed2f7437","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"1e76ea4b-1912-4cb7-8857-44bac35c544a","type":"ColumnDataSource"},"glyph":{"id":"12eb67ab-f001-49dc-93c1-feff55e119fb","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"f95c8652-c78e-4e4e-a434-c567cd40d252","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"ed6b2dc8-cf08-4d3c-af21-779b91ba087e","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(9.680000, 12.240000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1165.0],"label":["(9.680000, 12.240000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000005],"x":["10.96"],"y":[582.5]}},"id":"7afb01b6-44e2-4243-8821-5e5ba1f2dc7f","type":"ColumnDataSource"},{"attributes":{"axis_label":"sentence lengths","formatter":{"id":"48e64649-d6ca-4e01-ac5f-61494978243f","type":"BasicTickFormatter"},"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"},"ticker":{"id":"02febd63-0900-4e3f-81ec-0f39fb4e70d3","type":"BasicTicker"}},"id":"645f58dc-809a-434f-8319-57f973253043","type":"LinearAxis"},{"attributes":{"data_source":{"id":"fa2e3a6b-7adc-467a-a29a-b1c6f55571cd","type":"ColumnDataSource"},"glyph":{"id":"f7ff7bc5-ecfa-4e47-97d0-4d20d6792029","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"3eb1eca7-d9c0-44d0-8ae8-2455c16e6a63","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"48e9f968-f5db-4be6-9371-1fead15dd0db","type":"ColumnDataSource"},"glyph":{"id":"4c27ad6e-c021-491f-8996-198638988727","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"56b77ec0-f61b-441a-bc74-0b8ef3e46ec2","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"396df32f-887e-45f3-8b7e-1803681bb859","type":"ColumnDataSource"},"glyph":{"id":"3a3ec46d-8572-4755-9a93-118ec5a68d2d","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"6b8e0a7a-ebf2-43e9-abcb-3b78be3be4dd","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"5d1f6649-e399-432f-a4dc-19ead6a44d39","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"a6263af5-bd87-48f9-b40d-6ed233253dd7","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"226c2e8f-ddc6-4439-8fcb-9bd853839770","type":"Rect"},{"attributes":{"active_drag":"auto","active_scroll":"auto","active_tap":"auto","tools":[{"id":"9b131333-6c77-469b-bcb3-7ea6220fa5ce","type":"PanTool"},{"id":"ade63397-0fb9-495b-a0be-a786be5e55e0","type":"WheelZoomTool"},{"id":"463f5d2c-e878-43b7-8911-696d029c1fa8","type":"BoxZoomTool"},{"id":"f1415b0b-3dd8-4c31-b8cf-4e64ca488032","type":"SaveTool"},{"id":"5aff4e8a-cd49-4722-a267-f2b5adc63daa","type":"ResetTool"},{"id":"1a4a633c-13b4-43d5-9193-1c69dc90dadd","type":"HelpTool"}]},"id":"bc4e492b-cbaf-4be8-97d7-af349a8499db","type":"Toolbar"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"1995c744-dc35-440a-b263-ffc009ce6df5","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"39a266f9-7a69-4db4-ad91-d4a3c9916384","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"aab1ed0a-9e93-4e71-bfb6-7c0bd82262dc","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(32.720000, 35.280000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[27.0],"label":["(32.720000, 35.280000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["34.0"],"y":[13.5]}},"id":"22743ccd-0df0-41a0-af88-ca8c09ec2d0b","type":"ColumnDataSource"},{"attributes":{"bottom_units":"screen","fill_alpha":{"value":0.5},"fill_color":{"value":"lightgrey"},"left_units":"screen","level":"overlay","line_alpha":{"value":1.0},"line_color":{"value":"black"},"line_dash":[4,4],"line_width":{"value":2},"plot":null,"render_mode":"css","right_units":"screen","top_units":"screen"},"id":"7cb0ef38-e46a-4b4f-bff0-cad647e703a8","type":"BoxAnnotation"},{"attributes":{"data_source":{"id":"0d505469-40f0-49d1-8373-94ae32e8eeca","type":"ColumnDataSource"},"glyph":{"id":"5b004cc5-cc8a-4120-a5a0-9b4ddb009e38","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"fc56e978-efab-4f52-b4c2-6f33fce0e8bc","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"cd043fcf-1752-405b-9bba-8f4fe1c47f39","type":"Rect"},{"attributes":{"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"5aff4e8a-cd49-4722-a267-f2b5adc63daa","type":"ResetTool"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"a8dc7d55-1c41-4169-b424-3557015ed694","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"12eb67ab-f001-49dc-93c1-feff55e119fb","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(7.120000, 9.680000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1032.0],"label":["(7.120000, 9.680000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999996],"x":["8.4"],"y":[516.0]}},"id":"4ee997b2-0979-4b94-93de-1aff90107e6d","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"0cbc881a-fa00-4c52-a4c7-e7c83ab64600","type":"ColumnDataSource"},"glyph":{"id":"226c2e8f-ddc6-4439-8fcb-9bd853839770","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"409ae39d-f1de-4af1-a535-c2fcfa795bff","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(14.800000, 17.360000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[554.0],"label":["(14.800000, 17.360000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999987],"x":["16.08"],"y":[277.0]}},"id":"396df32f-887e-45f3-8b7e-1803681bb859","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(48.080000, 50.640000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(48.080000, 50.640000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["49.36"],"y":[0.5]}},"id":"f8ad9903-95f4-4872-8a36-1321b8b42884","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"5467f4a1-8c70-4a0c-bcc5-b3739761393c","type":"ColumnDataSource"},"glyph":{"id":"a483e3ba-1ddf-4ffd-aea6-e94e618ad690","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"e91327c9-4e5a-4646-9121-2a5883edb6da","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(101.840000, 104.400000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(101.840000, 104.400000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["103.12"],"y":[0.0]}},"id":"f349e8be-8227-4f3b-a971-13f4f8e66155","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"76f24404-d5c1-4726-a6f6-c842fe71d574","type":"ColumnDataSource"},"glyph":{"id":"a6e61952-558e-4f91-8773-7122b3d8490f","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"f01a80c5-df04-4733-b426-c6b9286b8a0d","type":"GlyphRenderer"},{"attributes":{"callback":null,"end":133.3,"start":-1.3000000000000007},"id":"179fe29c-366f-472a-ac87-848d437a90a9","type":"Range1d"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(104.400000, 106.960000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(104.400000, 106.960000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["105.68"],"y":[0.0]}},"id":"947f904c-a07c-48fd-b44c-6a8669b417a9","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(73.680000, 76.240000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(73.680000, 76.240000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999988],"x":["74.96000000000001"],"y":[0.5]}},"id":"25c4ee68-3501-4b78-b931-3727437dad3b","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"e14aa943-93e4-4a86-98a1-dcc6ba7c5a0c","type":"Rect"},{"attributes":{"data_source":{"id":"3b91e3d9-7e03-4cac-9d11-7a3754381c8f","type":"ColumnDataSource"},"glyph":{"id":"726b831a-eee4-49c8-8314-7c6b761cd32b","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"495ef3e7-bca9-4578-9a49-17abd4545ea7","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"f05886d0-622f-4048-8f2b-cacbd435c4ba","type":"ColumnDataSource"},"glyph":{"id":"9b87fa67-fc83-4fd2-a6f6-bdf7da4b81d2","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"29bf62cc-38a2-48d9-91e0-c70787b995fd","type":"GlyphRenderer"},{"attributes":{"plot":null,"text":null},"id":"c080e8ad-c195-46c4-87b8-253d35765c3c","type":"Title"},{"attributes":{"overlay":{"id":"7cb0ef38-e46a-4b4f-bff0-cad647e703a8","type":"BoxAnnotation"},"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"463f5d2c-e878-43b7-8911-696d029c1fa8","type":"BoxZoomTool"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"b4ec435f-4e92-4d05-b60c-f12fd127c0f0","type":"Rect"},{"attributes":{"data_source":{"id":"9bfd7f53-6fd8-420d-9309-77fdf41a1bd6","type":"ColumnDataSource"},"glyph":{"id":"df2d3324-3072-4c5b-bea9-32c80a9700f2","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"379b0425-2c26-4a96-8857-6dcc84c96e09","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"6a14d8ed-9d5d-4b33-a0b7-193ad3d249e9","type":"ColumnDataSource"},"glyph":{"id":"aab1ed0a-9e93-4e71-bfb6-7c0bd82262dc","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"a07c4be3-79f1-4701-971c-65dd57d77ce9","type":"GlyphRenderer"},{"attributes":{"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"f1415b0b-3dd8-4c31-b8cf-4e64ca488032","type":"SaveTool"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"ecdf0f6e-55ed-453d-bef2-9f88975e7639","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"94659fff-6bbe-485d-8f08-8ed06837037a","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"81e440ec-b982-4b39-a907-364801183e9f","type":"Rect"},{"attributes":{"data_source":{"id":"f8ad9903-95f4-4872-8a36-1321b8b42884","type":"ColumnDataSource"},"glyph":{"id":"1995c744-dc35-440a-b263-ffc009ce6df5","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"cfd52cae-48cf-4e13-8dc1-b2ecdb3a8fd9","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(119.760000, 122.320000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(119.760000, 122.320000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["121.03999999999999"],"y":[0.0]}},"id":"9a112a7f-acba-4c2a-a1ff-12a26eae84ea","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"173d5e41-b2c7-4391-876b-2fff132c03d9","type":"Rect"},{"attributes":{"data_source":{"id":"39816792-a218-4246-b7ba-777b823f58ab","type":"ColumnDataSource"},"glyph":{"id":"5b90c715-16a9-4460-a1dc-f38d9cf8da87","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"55c79cf7-bc0b-4275-9932-5d3678c8cdba","type":"GlyphRenderer"},{"attributes":{"location":"top_left","plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"84777c30-1f34-4cd0-a63c-4b84df131f9b","type":"Legend"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(27.600000, 30.160000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[51.0],"label":["(27.600000, 30.160000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999987],"x":["28.880000000000003"],"y":[25.5]}},"id":"fa2e3a6b-7adc-467a-a29a-b1c6f55571cd","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"5eeaa9b4-d6b1-4aac-a1c9-530af2962192","type":"Rect"},{"attributes":{"data_source":{"id":"f349e8be-8227-4f3b-a971-13f4f8e66155","type":"ColumnDataSource"},"glyph":{"id":"80e8bf4a-1074-42c1-9455-b62754415aa1","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"caf3047e-4d1d-4ebc-aa01-28b7b4fd39c3","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(109.520000, 112.080000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(109.520000, 112.080000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["110.8"],"y":[0.0]}},"id":"fdaeaceb-0288-46c0-a3ed-cc8e5329d5fc","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"1a63a0b8-1a2e-48fc-a1dd-94875c2a3637","type":"ColumnDataSource"},"glyph":{"id":"ecdf0f6e-55ed-453d-bef2-9f88975e7639","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"cc999369-ed24-4ff6-af75-66d497d2f95e","type":"GlyphRenderer"},{"attributes":{"callback":null,"end":1483.9},"id":"7e63d989-6be5-4a4b-8813-93a781a80d06","type":"Range1d"},{"attributes":{"data_source":{"id":"25c4ee68-3501-4b78-b931-3727437dad3b","type":"ColumnDataSource"},"glyph":{"id":"39a266f9-7a69-4db4-ad91-d4a3c9916384","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"46888a5d-370d-434d-9b3d-accef03604c0","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(106.960000, 109.520000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(106.960000, 109.520000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999988],"x":["108.24"],"y":[0.0]}},"id":"9bfd7f53-6fd8-420d-9309-77fdf41a1bd6","type":"ColumnDataSource"},{"attributes":{},"id":"02febd63-0900-4e3f-81ec-0f39fb4e70d3","type":"BasicTicker"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"4c27ad6e-c021-491f-8996-198638988727","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"c184c73e-d436-4597-be99-e48ee1159577","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"3a3ec46d-8572-4755-9a93-118ec5a68d2d","type":"Rect"},{"attributes":{"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"9b131333-6c77-469b-bcb3-7ea6220fa5ce","type":"PanTool"},{"attributes":{"data_source":{"id":"725fd89c-ef0c-46f7-92af-243cd15b8ae4","type":"ColumnDataSource"},"glyph":{"id":"bf0b0f05-6dc3-4f4e-ba9a-0418dbb06cd2","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"6097d581-3e7f-4437-8992-b9c8bfc04c75","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(117.200000, 119.760000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(117.200000, 119.760000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["118.48"],"y":[0.0]}},"id":"39816792-a218-4246-b7ba-777b823f58ab","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(81.360000, 83.920000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(81.360000, 83.920000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["82.64"],"y":[0.0]}},"id":"70ea4bf2-a39b-4650-ad44-1379b689eb93","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"6d6b4c4d-bb6d-455e-9e51-a01bd9e6f1f4","type":"ColumnDataSource"},"glyph":{"id":"01574f78-a558-46a6-82f7-8e9d226ed450","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"84a670fc-02bf-4293-966c-91b2d66378d3","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"48f10d83-5529-485d-8b5c-7c6d749ba248","type":"ColumnDataSource"},"glyph":{"id":"41bc4f06-4b83-4e97-a2af-ca976dc58b58","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"1401e513-edcd-4d62-949a-4a3b09cb7ffe","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(66.000000, 68.560000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(66.000000, 68.560000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["67.28"],"y":[0.5]}},"id":"0cbc881a-fa00-4c52-a4c7-e7c83ab64600","type":"ColumnDataSource"},{"attributes":{},"id":"48e64649-d6ca-4e01-ac5f-61494978243f","type":"BasicTickFormatter"},{"attributes":{"data_source":{"id":"cc0e9648-3751-474e-845d-fc442bc9d990","type":"ColumnDataSource"},"glyph":{"id":"b4ec435f-4e92-4d05-b60c-f12fd127c0f0","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"019148e6-5f18-4a8a-bada-38887339060b","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"97aad34a-ae13-4cc5-b6f9-0006366c521f","type":"Rect"},{"attributes":{"data_source":{"id":"360493dd-4ef0-40df-9ad1-3416985980a1","type":"ColumnDataSource"},"glyph":{"id":"285eb0c1-76ee-4680-934f-d7047d858623","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"9430d154-78a9-4120-9f5f-25036d8a72cd","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(83.920000, 86.480000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(83.920000, 86.480000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["85.2"],"y":[0.0]}},"id":"624a4deb-817f-4609-a054-4a04898eafa8","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(63.440000, 66.000000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(63.440000, 66.000000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["64.72"],"y":[0.0]}},"id":"895b89c6-cec6-4472-a96a-71e8ac30c09a","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"dde29ff3-344f-4df3-add5-7f0d2b22b23e","type":"ColumnDataSource"},"glyph":{"id":"e14aa943-93e4-4a86-98a1-dcc6ba7c5a0c","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"ffdc61ca-bb7a-49d7-bbdf-2f6a7c40f8f9","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(99.280000, 101.840000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(99.280000, 101.840000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["100.56"],"y":[0.0]}},"id":"48f10d83-5529-485d-8b5c-7c6d749ba248","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(68.560000, 71.120000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(68.560000, 71.120000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["69.84"],"y":[0.5]}},"id":"a118cc81-fab5-4348-b9dd-e2feb79916ff","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"5b90c715-16a9-4460-a1dc-f38d9cf8da87","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(112.080000, 114.640000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(112.080000, 114.640000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["113.36"],"y":[0.0]}},"id":"dde29ff3-344f-4df3-add5-7f0d2b22b23e","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"aaa5037f-7dc2-43bb-86f7-7a991893fc45","type":"ColumnDataSource"},"glyph":{"id":"81e440ec-b982-4b39-a907-364801183e9f","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"5a5c4594-63bd-4962-a2b0-0bf805de916e","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"c60cc52f-8af6-4a0e-8f95-98660c27806b","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"83db8ed5-412a-459a-a5ff-75045ed5d2f1","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"bdef5256-45f1-403b-a80b-460404bee8e5","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(124.880000, 127.440000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(124.880000, 127.440000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["126.16"],"y":[0.0]}},"id":"f05886d0-622f-4048-8f2b-cacbd435c4ba","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"d3e84467-1121-4794-895e-3f91ed226214","type":"ColumnDataSource"},"glyph":{"id":"a6263af5-bd87-48f9-b40d-6ed233253dd7","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"3f3bf28f-241d-4cff-afc8-3f96ad23314c","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"bc4edc77-fc52-409b-ab06-786c4d971342","type":"ColumnDataSource"},"glyph":{"id":"5eeaa9b4-d6b1-4aac-a1c9-530af2962192","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"0c40240a-1fdb-41a3-8b39-e759cc2de480","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"f7ff7bc5-ecfa-4e47-97d0-4d20d6792029","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(4.560000, 7.120000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1349.0],"label":["(4.560000, 7.120000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999996],"x":["5.84"],"y":[674.5]}},"id":"0b9b6621-2b33-4b0b-8476-7e8e9de82fb1","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"7bcc347e-0945-4046-9909-ceff7d32da6c","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"337eaddb-5266-4697-a059-62f306e291d9","type":"Rect"},{"attributes":{"data_source":{"id":"947f904c-a07c-48fd-b44c-6a8669b417a9","type":"ColumnDataSource"},"glyph":{"id":"94659fff-6bbe-485d-8f08-8ed06837037a","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"d5acb926-a47f-4645-9f08-40424f4ae350","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(76.240000, 78.800000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(76.240000, 78.800000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["77.52"],"y":[0.0]}},"id":"6a14d8ed-9d5d-4b33-a0b7-193ad3d249e9","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"bf209114-65f9-4c78-b60e-7a8c24acfa8d","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(114.640000, 117.200000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(114.640000, 117.200000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["115.92"],"y":[0.5]}},"id":"62753b64-cb80-435c-9f49-f02f92ea10ab","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(122.320000, 124.880000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(122.320000, 124.880000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999988],"x":["123.6"],"y":[0.0]}},"id":"6d6b4c4d-bb6d-455e-9e51-a01bd9e6f1f4","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(35.280000, 37.840000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[14.0],"label":["(35.280000, 37.840000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["36.56"],"y":[7.0]}},"id":"8441f470-1813-4b1b-a75d-10882d74f3c4","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["[2.000000, 4.560000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[624.0],"label":["[2.000000, 4.560000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000005],"x":["3.28"],"y":[312.0]}},"id":"bf00b15f-04e2-4cb7-935c-ccbd195caea1","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(45.520000, 48.080000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[7.0],"label":["(45.520000, 48.080000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999995],"x":["46.8"],"y":[3.5]}},"id":"5467f4a1-8c70-4a0c-bcc5-b3739761393c","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(42.960000, 45.520000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[9.0],"label":["(42.960000, 45.520000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["44.24"],"y":[4.5]}},"id":"0dd7c353-f1c7-4d13-9cf0-adf6fdfb19b0","type":"ColumnDataSource"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(22.480000, 25.040000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[150.0],"label":["(22.480000, 25.040000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999987],"x":["23.759999999999998"],"y":[75.0]}},"id":"bc4edc77-fc52-409b-ab06-786c4d971342","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"9a70bd68-22a8-4e19-bd94-d632c7837a47","type":"Rect"},{"attributes":{"data_source":{"id":"4ee997b2-0979-4b94-93de-1aff90107e6d","type":"ColumnDataSource"},"glyph":{"id":"27ed2932-debe-461a-afa2-7f8125bd038f","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"9ea709da-c7cd-4881-8aca-cd47b1aee042","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"8441f470-1813-4b1b-a75d-10882d74f3c4","type":"ColumnDataSource"},"glyph":{"id":"78616d71-a9a4-4706-82b3-eca21d69f38a","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"dd5d006a-ca41-49c6-902a-77b060a8d933","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"41bc4f06-4b83-4e97-a2af-ca976dc58b58","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"181d12a5-edea-42e1-933b-8082684768ca","type":"Rect"},{"attributes":{"data_source":{"id":"5ea291eb-2b63-49d7-9caa-5449ca9fb2fa","type":"ColumnDataSource"},"glyph":{"id":"773d7690-faee-4e37-96c5-4c54e18b9cff","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"be491811-b2e5-4058-a0ed-163dde279ccf","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"b7b06d74-05c1-4358-8b82-a5a017b82eca","type":"ColumnDataSource"},"glyph":{"id":"c184c73e-d436-4597-be99-e48ee1159577","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"763c8cf1-ac5e-4117-b9dc-d21ec8fb659c","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"285eb0c1-76ee-4680-934f-d7047d858623","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"d52ff6f4-5267-45d9-be55-ad6a692abb37","type":"Rect"},{"attributes":{"data_source":{"id":"a118cc81-fab5-4348-b9dd-e2feb79916ff","type":"ColumnDataSource"},"glyph":{"id":"83db8ed5-412a-459a-a5ff-75045ed5d2f1","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"78cd7987-7026-4cef-b8ac-0b395143b374","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"61883ba6-7728-4d19-8e42-f2b9ccf02545","type":"ColumnDataSource"},"glyph":{"id":"7bcc347e-0945-4046-9909-ceff7d32da6c","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"c2f3032a-bdaf-4e87-9756-44ca7d72a246","type":"GlyphRenderer"},{"attributes":{},"id":"8ab847ed-fb0b-4e7c-b2ec-d7d2b0e1cc9b","type":"BasicTicker"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(60.880000, 63.440000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(60.880000, 63.440000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999995],"x":["62.16"],"y":[0.0]}},"id":"5d178311-517a-4c92-93a4-0b4a1918cbaa","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"bf0b0f05-6dc3-4f4e-ba9a-0418dbb06cd2","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(19.920000, 22.480000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[233.0],"label":["(19.920000, 22.480000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999987],"x":["21.200000000000003"],"y":[116.5]}},"id":"48e9f968-f5db-4be6-9371-1fead15dd0db","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"70ea4bf2-a39b-4650-ad44-1379b689eb93","type":"ColumnDataSource"},"glyph":{"id":"d95aaf60-18ae-447f-84e8-5f083e51af31","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"4a1742fc-3678-4877-813a-56ebdd2a3588","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(78.800000, 81.360000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[0.0],"label":["(78.800000, 81.360000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["80.08"],"y":[0.0]}},"id":"5ea291eb-2b63-49d7-9caa-5449ca9fb2fa","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"e6c43d16-108c-4784-8253-d599fdc98f7d","type":"ColumnDataSource"},"glyph":{"id":"181d12a5-edea-42e1-933b-8082684768ca","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"1a82132b-9a24-4a8c-a1f6-79a361865848","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"134495f4-8520-45ad-ba70-e6b149b727a4","type":"ColumnDataSource"},"glyph":{"id":"d52ff6f4-5267-45d9-be55-ad6a692abb37","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"91ed5797-c4b4-4558-b8ea-fe42b95b9344","type":"GlyphRenderer"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"df2d3324-3072-4c5b-bea9-32c80a9700f2","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(127.440000, 130.000000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(127.440000, 130.000000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["128.72"],"y":[0.5]}},"id":"d3e84467-1121-4794-895e-3f91ed226214","type":"ColumnDataSource"},{"attributes":{"below":[{"id":"645f58dc-809a-434f-8319-57f973253043","type":"LinearAxis"}],"css_classes":null,"left":[{"id":"56e1bb16-fc6f-40e0-becd-71a8872d9e65","type":"LinearAxis"}],"renderers":[{"id":"7cb0ef38-e46a-4b4f-bff0-cad647e703a8","type":"BoxAnnotation"},{"id":"6476ec4f-262b-4548-8d5e-9e3aa89a5e30","type":"GlyphRenderer"},{"id":"53da2b5c-fb54-461d-97c1-3bed79e30940","type":"GlyphRenderer"},{"id":"9ea709da-c7cd-4881-8aca-cd47b1aee042","type":"GlyphRenderer"},{"id":"d8de2099-da01-457b-b66d-f201e63a3cc2","type":"GlyphRenderer"},{"id":"88c59ec8-a54c-475a-bdf4-bbef1d59334c","type":"GlyphRenderer"},{"id":"6b8e0a7a-ebf2-43e9-abcb-3b78be3be4dd","type":"GlyphRenderer"},{"id":"6097d581-3e7f-4437-8992-b9c8bfc04c75","type":"GlyphRenderer"},{"id":"56b77ec0-f61b-441a-bc74-0b8ef3e46ec2","type":"GlyphRenderer"},{"id":"0c40240a-1fdb-41a3-8b39-e759cc2de480","type":"GlyphRenderer"},{"id":"c2f3032a-bdaf-4e87-9756-44ca7d72a246","type":"GlyphRenderer"},{"id":"3eb1eca7-d9c0-44d0-8ae8-2455c16e6a63","type":"GlyphRenderer"},{"id":"5a5c4594-63bd-4962-a2b0-0bf805de916e","type":"GlyphRenderer"},{"id":"b426abc2-a156-4d5c-9418-299b9ef6d5fe","type":"GlyphRenderer"},{"id":"dd5d006a-ca41-49c6-902a-77b060a8d933","type":"GlyphRenderer"},{"id":"019148e6-5f18-4a8a-bada-38887339060b","type":"GlyphRenderer"},{"id":"495ef3e7-bca9-4578-9a49-17abd4545ea7","type":"GlyphRenderer"},{"id":"6ea78de2-d897-497a-b67b-6e307240eead","type":"GlyphRenderer"},{"id":"e91327c9-4e5a-4646-9121-2a5883edb6da","type":"GlyphRenderer"},{"id":"cfd52cae-48cf-4e13-8dc1-b2ecdb3a8fd9","type":"GlyphRenderer"},{"id":"f01a80c5-df04-4733-b426-c6b9286b8a0d","type":"GlyphRenderer"},{"id":"f9b8acab-91ed-4366-9ec8-0e62d29075c3","type":"GlyphRenderer"},{"id":"763c8cf1-ac5e-4117-b9dc-d21ec8fb659c","type":"GlyphRenderer"},{"id":"2c460e7e-e565-4b47-9fee-0c8fed2f7437","type":"GlyphRenderer"},{"id":"f4f4a97e-ae8d-41ae-ba25-7805ae6e7955","type":"GlyphRenderer"},{"id":"673dc7bd-f84f-4b22-9045-a6eb7d2822e4","type":"GlyphRenderer"},{"id":"409ae39d-f1de-4af1-a535-c2fcfa795bff","type":"GlyphRenderer"},{"id":"78cd7987-7026-4cef-b8ac-0b395143b374","type":"GlyphRenderer"},{"id":"9430d154-78a9-4120-9f5f-25036d8a72cd","type":"GlyphRenderer"},{"id":"46888a5d-370d-434d-9b3d-accef03604c0","type":"GlyphRenderer"},{"id":"a07c4be3-79f1-4701-971c-65dd57d77ce9","type":"GlyphRenderer"},{"id":"be491811-b2e5-4058-a0ed-163dde279ccf","type":"GlyphRenderer"},{"id":"4a1742fc-3678-4877-813a-56ebdd2a3588","type":"GlyphRenderer"},{"id":"a4329407-f831-4d25-85d1-66960fe7d31e","type":"GlyphRenderer"},{"id":"cc999369-ed24-4ff6-af75-66d497d2f95e","type":"GlyphRenderer"},{"id":"91ed5797-c4b4-4558-b8ea-fe42b95b9344","type":"GlyphRenderer"},{"id":"fc56e978-efab-4f52-b4c2-6f33fce0e8bc","type":"GlyphRenderer"},{"id":"1a82132b-9a24-4a8c-a1f6-79a361865848","type":"GlyphRenderer"},{"id":"f95c8652-c78e-4e4e-a434-c567cd40d252","type":"GlyphRenderer"},{"id":"1401e513-edcd-4d62-949a-4a3b09cb7ffe","type":"GlyphRenderer"},{"id":"caf3047e-4d1d-4ebc-aa01-28b7b4fd39c3","type":"GlyphRenderer"},{"id":"d5acb926-a47f-4645-9f08-40424f4ae350","type":"GlyphRenderer"},{"id":"379b0425-2c26-4a96-8857-6dcc84c96e09","type":"GlyphRenderer"},{"id":"46c7b025-d143-4c0a-aad3-ec3ba8ecd967","type":"GlyphRenderer"},{"id":"ffdc61ca-bb7a-49d7-bbdf-2f6a7c40f8f9","type":"GlyphRenderer"},{"id":"68605d7e-c637-42e9-a2b2-e979863f1dca","type":"GlyphRenderer"},{"id":"55c79cf7-bc0b-4275-9932-5d3678c8cdba","type":"GlyphRenderer"},{"id":"2cd54bb2-d37e-432b-863f-dea9fb8502c9","type":"GlyphRenderer"},{"id":"84a670fc-02bf-4293-966c-91b2d66378d3","type":"GlyphRenderer"},{"id":"29bf62cc-38a2-48d9-91e0-c70787b995fd","type":"GlyphRenderer"},{"id":"3f3bf28f-241d-4cff-afc8-3f96ad23314c","type":"GlyphRenderer"},{"id":"84777c30-1f34-4cd0-a63c-4b84df131f9b","type":"Legend"},{"id":"645f58dc-809a-434f-8319-57f973253043","type":"LinearAxis"},{"id":"56e1bb16-fc6f-40e0-becd-71a8872d9e65","type":"LinearAxis"},{"id":"56b3ebb8-63c4-45b8-9268-0b378b603322","type":"Grid"}],"title":{"id":"c080e8ad-c195-46c4-87b8-253d35765c3c","type":"Title"},"tool_events":{"id":"11d3a5b2-10bd-4027-a836-781f952a42f3","type":"ToolEvents"},"toolbar":{"id":"bc4e492b-cbaf-4be8-97d7-af349a8499db","type":"Toolbar"},"x_mapper_type":"auto","x_range":{"id":"179fe29c-366f-472a-ac87-848d437a90a9","type":"Range1d"},"y_mapper_type":"auto","y_range":{"id":"7e63d989-6be5-4a4b-8813-93a781a80d06","type":"Range1d"}},"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(37.840000, 40.400000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[13.0],"label":["(37.840000, 40.400000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999995],"x":["39.120000000000005"],"y":[6.5]}},"id":"cc0e9648-3751-474e-845d-fc442bc9d990","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"9a112a7f-acba-4c2a-a1ff-12a26eae84ea","type":"ColumnDataSource"},"glyph":{"id":"337eaddb-5266-4697-a059-62f306e291d9","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"2cd54bb2-d37e-432b-863f-dea9fb8502c9","type":"GlyphRenderer"},{"attributes":{"data_source":{"id":"3da62201-1a25-469f-abfe-12d2446026d7","type":"ColumnDataSource"},"glyph":{"id":"bdef5256-45f1-403b-a80b-460404bee8e5","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"88c59ec8-a54c-475a-bdf4-bbef1d59334c","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(94.160000, 96.720000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[1.0],"label":["(94.160000, 96.720000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["95.44"],"y":[0.5]}},"id":"e6c43d16-108c-4784-8253-d599fdc98f7d","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"895b89c6-cec6-4472-a96a-71e8ac30c09a","type":"ColumnDataSource"},"glyph":{"id":"7009ab47-3809-427f-8ea3-3b9205dfeb63","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"673dc7bd-f84f-4b22-9045-a6eb7d2822e4","type":"GlyphRenderer"},{"attributes":{},"id":"11d3a5b2-10bd-4027-a836-781f952a42f3","type":"ToolEvents"},{"attributes":{"data_source":{"id":"22743ccd-0df0-41a0-af88-ca8c09ec2d0b","type":"ColumnDataSource"},"glyph":{"id":"bf209114-65f9-4c78-b60e-7a8c24acfa8d","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"b426abc2-a156-4d5c-9418-299b9ef6d5fe","type":"GlyphRenderer"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(53.200000, 55.760000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[2.0],"label":["(53.200000, 55.760000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.559999999999995],"x":["54.480000000000004"],"y":[1.0]}},"id":"afc886b4-f0e3-4052-851d-4c683d18c35a","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"d95aaf60-18ae-447f-84e8-5f083e51af31","type":"Rect"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(55.760000, 58.320000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[6.0],"label":["(55.760000, 58.320000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["57.04"],"y":[3.0]}},"id":"b7b06d74-05c1-4358-8b82-a5a017b82eca","type":"ColumnDataSource"},{"attributes":{"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"}},"id":"ade63397-0fb9-495b-a0be-a786be5e55e0","type":"WheelZoomTool"},{"attributes":{"dimension":1,"plot":{"id":"72dc7dee-c815-47a1-ac56-5227256aa304","subtype":"Chart","type":"Plot"},"ticker":{"id":"8ab847ed-fb0b-4e7c-b2ec-d7d2b0e1cc9b","type":"BasicTicker"}},"id":"56b3ebb8-63c4-45b8-9268-0b378b603322","type":"Grid"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(30.160000, 32.720000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[29.0],"label":["(30.160000, 32.720000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5599999999999987],"x":["31.439999999999998"],"y":[14.5]}},"id":"aaa5037f-7dc2-43bb-86f7-7a991893fc45","type":"ColumnDataSource"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"726b831a-eee4-49c8-8314-7c6b761cd32b","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"773d7690-faee-4e37-96c5-4c54e18b9cff","type":"Rect"},{"attributes":{"fill_alpha":{"field":"fill_alpha"},"fill_color":{"field":"color"},"height":{"field":"height","units":"data"},"line_color":{"field":"line_color"},"width":{"field":"width","units":"data"},"x":{"field":"x"},"y":{"field":"y"}},"id":"78616d71-a9a4-4706-82b3-eca21d69f38a","type":"Rect"},{"attributes":{},"id":"b30cd8c9-c534-4c22-84bc-b3902cade211","type":"BasicTickFormatter"},{"attributes":{"callback":null,"column_names":["width","line_color","color","y","line_alpha","label","x","height","fill_alpha"],"data":{"chart_index":["(17.360000, 19.920000]"],"color":["#f22c40"],"fill_alpha":[0.8],"height":[233.0],"label":["(17.360000, 19.920000]"],"line_alpha":[1.0],"line_color":["black"],"width":[2.5600000000000023],"x":["18.64"],"y":[116.5]}},"id":"725fd89c-ef0c-46f7-92af-243cd15b8ae4","type":"ColumnDataSource"},{"attributes":{"data_source":{"id":"624a4deb-817f-4609-a054-4a04898eafa8","type":"ColumnDataSource"},"glyph":{"id":"173d5e41-b2c7-4391-876b-2fff132c03d9","type":"Rect"},"hover_glyph":null,"nonselection_glyph":null,"selection_glyph":null},"id":"a4329407-f831-4d25-85d1-66960fe7d31e","type":"GlyphRenderer"}],"root_ids":["72dc7dee-c815-47a1-ac56-5227256aa304"]},"title":"Bokeh Application","version":"0.12.4"}};
+            var render_items = [{"docid":"9f84cecc-8ae3-424e-8008-c4f2108b2e40","elementid":"e6d57401-77d4-4f94-812f-47bd9fad17a0","modelid":"72dc7dee-c815-47a1-ac56-5227256aa304"}];
+            
+            Bokeh.embed.embed_items(docs_json, render_items);
+          };
+          if (document.readyState != "loading") fn();
+          else document.addEventListener("DOMContentLoaded", fn);
+        })();
+      },
+      function(Bokeh) {
+      }
+    ];
+  
+    function run_inline_js() {
+      
+      if ((window.Bokeh !== undefined) || (force === true)) {
+        for (var i = 0; i < inline_js.length; i++) {
+          inline_js[i](window.Bokeh);
+        }if (force === true) {
+          display_loaded();
+        }} else if (Date.now() < window._bokeh_timeout) {
+        setTimeout(run_inline_js, 100);
+      } else if (!window._bokeh_failed_load) {
+        console.log("Bokeh: BokehJS failed to load within specified timeout.");
+        window._bokeh_failed_load = true;
+      } else if (force !== true) {
+        var cell = $(document.getElementById("e6d57401-77d4-4f94-812f-47bd9fad17a0")).parents('.cell').data().cell;
+        cell.output_area.append_execute_result(NB_LOAD_WARNING)
+      }
+  
+    }
+  
+    if (window._bokeh_is_loading === 0) {
+      console.log("Bokeh: BokehJS loaded, going straight to plotting");
+      run_inline_js();
+    } else {
+      load_libs(js_urls, function() {
+        console.log("Bokeh: BokehJS plotting callback run at", now());
+        run_inline_js();
+      });
+    }
+  }(this));
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Mean of sentences length is 11.279889538661468
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="prompt input_prompt">
 </div>
@@ -11904,7 +12312,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[65]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -11977,7 +12385,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">token_lookup</span><span class="p">():</span>
@@ -12038,7 +12446,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12065,7 +12473,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12094,7 +12502,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[177]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
@@ -12136,7 +12544,7 @@ Barney_Gumble: Yeah, you should only drink to enhance your social skills.
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12197,7 +12605,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[225]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_inputs</span><span class="p">():</span>
@@ -12264,7 +12672,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[227]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_init_cell</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">rnn_size</span><span class="p">):</span>
@@ -12330,7 +12738,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[207]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_embed</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">):</span>
@@ -12397,7 +12805,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[228]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">build_rnn</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
@@ -12463,7 +12871,7 @@ Default GPU Device: /gpu:0
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[231]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">build_nn</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">rnn_size</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">):</span>
@@ -12600,7 +13008,40 @@ Tests Passed
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[233]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">t</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt output_prompt">Out[17]:</div>
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([4, 2, 1, 3])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[123]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_batches</span><span class="p">(</span><span class="n">int_text</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">):</span>
@@ -12612,9 +13053,13 @@ Tests Passed
 <span class="sd">    :return: Batches as a Numpy array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">slice_size</span> <span class="o">=</span> <span class="n">batch_size</span> <span class="o">*</span> <span class="n">seq_length</span>
+    <span class="n">slice_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">seq_length</span><span class="p">)</span>
     <span class="n">n_batches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">int_text</span><span class="p">)</span><span class="o">/</span><span class="n">slice_size</span><span class="p">)</span>
     
+    <span class="k">assert</span> <span class="n">n_batches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Maybe your batch size is too big ?&#39;</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n_batches </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_batches</span><span class="p">))</span>
+
     <span class="c1"># input part</span>
     <span class="n">_inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">int_text</span><span class="p">[:</span><span class="n">n_batches</span><span class="o">*</span><span class="n">slice_size</span><span class="p">])</span>
     
@@ -12622,22 +13067,31 @@ Tests Passed
     <span class="n">_targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">int_text</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n_batches</span><span class="o">*</span><span class="n">slice_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
     
 
-    <span class="c1"># Go through all inputs, targets and split them into batch_size*seq_len list of items</span>
-    <span class="c1"># [batch, batch, ...]</span>
-    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_inputs</span><span class="p">,</span> <span class="n">n_batches</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">_targets</span><span class="p">,</span> <span class="n">n_batches</span><span class="p">)</span>
+    <span class="c1"># Group inputs, targets into n_batches x seq_len items </span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">_inputs</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_batches</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">_targets</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_batches</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">))</span>
     
-    <span class="c1"># concat inputs and targets</span>
-    <span class="n">batches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">]</span>
-    <span class="c1">#print(batches.shape)</span>
+    
+       
+    <span class="c1"># Look through the n_batches axes</span>
+    <span class="c1">#print(inputs[:,0,:])</span>
+    
+    <span class="c1"># Swatch the 0 axis with n_batches axes, now 0 axis is n_batches axis</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+   
+    
+    <span class="c1"># stack inputs and targets on columns</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">))</span>
+
     
     <span class="c1"># Reshape into final batches output</span>
     <span class="n">batches</span> <span class="o">=</span> <span class="n">batches</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">))</span>
 
-    <span class="c1">#print(batches[0][1])</span>
-
     
     <span class="k">return</span> <span class="n">batches</span>
 
+
+<span class="c1">#Check first batch result</span>
+<span class="c1">#print(get_batches(np.arange(1,200,1), 20, 3)[0])</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">DON&#39;T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE</span>
@@ -12657,7 +13111,9 @@ Tests Passed
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Tests Passed
+<pre>n_batches 7
+
+Tests Passed
 </pre>
 </div>
 </div>
@@ -12686,19 +13142,20 @@ Tests Passed
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[234]:</div>
+<div class="prompt input_prompt">In&nbsp;[107]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Number of Epochs</span>
-<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="c1"># Batch Size</span>
-<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">256</span>
 <span class="c1"># RNN Size</span>
-<span class="n">rnn_size</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">rnn_size</span> <span class="o">=</span> <span class="mi">128</span>
 <span class="c1"># Sequence Length</span>
-<span class="n">seq_length</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="c1"># Use the mean of sentences length as sequence length</span>
+<span class="n">seq_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s_lengths</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
 <span class="c1"># Learning Rate</span>
-<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">1e-2</span>
 <span class="c1"># Show stats for every n number of batches</span>
 <span class="n">show_every_n_batches</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -12725,7 +13182,7 @@ Tests Passed
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[235]:</div>
+<div class="prompt input_prompt">In&nbsp;[109]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12782,7 +13239,7 @@ Tests Passed
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[238]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># write out the graph for tensorboard</span>
@@ -12808,7 +13265,7 @@ Tests Passed
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[197]:</div>
+<div class="prompt input_prompt">In&nbsp;[110]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -12856,507 +13313,248 @@ Tests Passed
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>5
-Epoch   0 Batch    0/5   train_loss = 8.825
-Epoch   2 Batch    0/5   train_loss = 6.441
-Epoch   4 Batch    0/5   train_loss = 6.023
-Epoch   6 Batch    0/5   train_loss = 5.927
-Epoch   8 Batch    0/5   train_loss = 5.903
-Epoch  10 Batch    0/5   train_loss = 5.883
-Epoch  12 Batch    0/5   train_loss = 5.874
-Epoch  14 Batch    0/5   train_loss = 5.858
-Epoch  16 Batch    0/5   train_loss = 5.833
-Epoch  18 Batch    0/5   train_loss = 5.794
-Epoch  20 Batch    0/5   train_loss = 5.739
-Epoch  22 Batch    0/5   train_loss = 5.682
-Epoch  24 Batch    0/5   train_loss = 5.626
-Epoch  26 Batch    0/5   train_loss = 5.572
-Epoch  28 Batch    0/5   train_loss = 5.521
-Epoch  30 Batch    0/5   train_loss = 5.471
-Epoch  32 Batch    0/5   train_loss = 5.421
-Epoch  34 Batch    0/5   train_loss = 5.365
-Epoch  36 Batch    0/5   train_loss = 5.304
-Epoch  38 Batch    0/5   train_loss = 5.244
-Epoch  40 Batch    0/5   train_loss = 5.185
-Epoch  42 Batch    0/5   train_loss = 5.124
-Epoch  44 Batch    0/5   train_loss = 5.063
-Epoch  46 Batch    0/5   train_loss = 5.003
-Epoch  48 Batch    0/5   train_loss = 4.945
-Epoch  50 Batch    0/5   train_loss = 4.891
-Epoch  52 Batch    0/5   train_loss = 4.841
-Epoch  54 Batch    0/5   train_loss = 4.794
-Epoch  56 Batch    0/5   train_loss = 4.751
-Epoch  58 Batch    0/5   train_loss = 4.710
-Epoch  60 Batch    0/5   train_loss = 4.669
-Epoch  62 Batch    0/5   train_loss = 4.638
-Epoch  64 Batch    0/5   train_loss = 4.638
-Epoch  66 Batch    0/5   train_loss = 4.589
-Epoch  68 Batch    0/5   train_loss = 4.537
-Epoch  70 Batch    0/5   train_loss = 4.501
-Epoch  72 Batch    0/5   train_loss = 4.469
-Epoch  74 Batch    0/5   train_loss = 4.436
-Epoch  76 Batch    0/5   train_loss = 4.405
-Epoch  78 Batch    0/5   train_loss = 4.375
-Epoch  80 Batch    0/5   train_loss = 4.344
-Epoch  82 Batch    0/5   train_loss = 4.363
-Epoch  84 Batch    0/5   train_loss = 4.311
-Epoch  86 Batch    0/5   train_loss = 4.274
-Epoch  88 Batch    0/5   train_loss = 4.240
-Epoch  90 Batch    0/5   train_loss = 4.211
-Epoch  92 Batch    0/5   train_loss = 4.182
-Epoch  94 Batch    0/5   train_loss = 4.155
-Epoch  96 Batch    0/5   train_loss = 4.135
-Epoch  98 Batch    0/5   train_loss = 4.107
-Epoch 100 Batch    0/5   train_loss = 4.093
-Epoch 102 Batch    0/5   train_loss = 4.053
-Epoch 104 Batch    0/5   train_loss = 4.030
-Epoch 106 Batch    0/5   train_loss = 4.002
-Epoch 108 Batch    0/5   train_loss = 3.978
-Epoch 110 Batch    0/5   train_loss = 3.951
-Epoch 112 Batch    0/5   train_loss = 3.928
-Epoch 114 Batch    0/5   train_loss = 3.902
-Epoch 116 Batch    0/5   train_loss = 3.884
-Epoch 118 Batch    0/5   train_loss = 3.862
-Epoch 120 Batch    0/5   train_loss = 3.840
-Epoch 122 Batch    0/5   train_loss = 3.814
-Epoch 124 Batch    0/5   train_loss = 3.803
-Epoch 126 Batch    0/5   train_loss = 3.775
-Epoch 128 Batch    0/5   train_loss = 3.738
-Epoch 130 Batch    0/5   train_loss = 3.714
-Epoch 132 Batch    0/5   train_loss = 3.690
-Epoch 134 Batch    0/5   train_loss = 3.665
-Epoch 136 Batch    0/5   train_loss = 3.642
-Epoch 138 Batch    0/5   train_loss = 3.619
-Epoch 140 Batch    0/5   train_loss = 3.596
-Epoch 142 Batch    0/5   train_loss = 3.577
-Epoch 144 Batch    0/5   train_loss = 3.588
-Epoch 146 Batch    0/5   train_loss = 3.561
-Epoch 148 Batch    0/5   train_loss = 3.537
-Epoch 150 Batch    0/5   train_loss = 3.494
-Epoch 152 Batch    0/5   train_loss = 3.475
-Epoch 154 Batch    0/5   train_loss = 3.444
-Epoch 156 Batch    0/5   train_loss = 3.431
-Epoch 158 Batch    0/5   train_loss = 3.403
-Epoch 160 Batch    0/5   train_loss = 3.393
-Epoch 162 Batch    0/5   train_loss = 3.371
-Epoch 164 Batch    0/5   train_loss = 3.352
-Epoch 166 Batch    0/5   train_loss = 3.323
-Epoch 168 Batch    0/5   train_loss = 3.328
-Epoch 170 Batch    0/5   train_loss = 3.281
-Epoch 172 Batch    0/5   train_loss = 3.261
-Epoch 174 Batch    0/5   train_loss = 3.238
-Epoch 176 Batch    0/5   train_loss = 3.216
-Epoch 178 Batch    0/5   train_loss = 3.197
-Epoch 180 Batch    0/5   train_loss = 3.172
-Epoch 182 Batch    0/5   train_loss = 3.169
-Epoch 184 Batch    0/5   train_loss = 3.140
-Epoch 186 Batch    0/5   train_loss = 3.136
-Epoch 188 Batch    0/5   train_loss = 3.145
-Epoch 190 Batch    0/5   train_loss = 3.106
-Epoch 192 Batch    0/5   train_loss = 3.069
-Epoch 194 Batch    0/5   train_loss = 3.038
-Epoch 196 Batch    0/5   train_loss = 3.019
-Epoch 198 Batch    0/5   train_loss = 2.995
-Epoch 200 Batch    0/5   train_loss = 2.979
-Epoch 202 Batch    0/5   train_loss = 2.960
-Epoch 204 Batch    0/5   train_loss = 2.943
-Epoch 206 Batch    0/5   train_loss = 2.963
-Epoch 208 Batch    0/5   train_loss = 2.917
-Epoch 210 Batch    0/5   train_loss = 2.898
-Epoch 212 Batch    0/5   train_loss = 2.867
-Epoch 214 Batch    0/5   train_loss = 2.863
-Epoch 216 Batch    0/5   train_loss = 2.834
-Epoch 218 Batch    0/5   train_loss = 2.809
-Epoch 220 Batch    0/5   train_loss = 2.797
-Epoch 222 Batch    0/5   train_loss = 2.774
-Epoch 224 Batch    0/5   train_loss = 2.759
-Epoch 226 Batch    0/5   train_loss = 2.732
-Epoch 228 Batch    0/5   train_loss = 2.742
-Epoch 230 Batch    0/5   train_loss = 2.704
-Epoch 232 Batch    0/5   train_loss = 2.703
-Epoch 234 Batch    0/5   train_loss = 2.663
-Epoch 236 Batch    0/5   train_loss = 2.672
-Epoch 238 Batch    0/5   train_loss = 2.638
-Epoch 240 Batch    0/5   train_loss = 2.620
-Epoch 242 Batch    0/5   train_loss = 2.595
-Epoch 244 Batch    0/5   train_loss = 2.585
-Epoch 246 Batch    0/5   train_loss = 2.563
-Epoch 248 Batch    0/5   train_loss = 2.539
-Epoch 250 Batch    0/5   train_loss = 2.534
-Epoch 252 Batch    0/5   train_loss = 2.517
-Epoch 254 Batch    0/5   train_loss = 2.497
-Epoch 256 Batch    0/5   train_loss = 2.475
-Epoch 258 Batch    0/5   train_loss = 2.463
-Epoch 260 Batch    0/5   train_loss = 2.478
-Epoch 262 Batch    0/5   train_loss = 2.450
-Epoch 264 Batch    0/5   train_loss = 2.436
-Epoch 266 Batch    0/5   train_loss = 2.417
-Epoch 268 Batch    0/5   train_loss = 2.384
-Epoch 270 Batch    0/5   train_loss = 2.363
-Epoch 272 Batch    0/5   train_loss = 2.340
-Epoch 274 Batch    0/5   train_loss = 2.323
-Epoch 276 Batch    0/5   train_loss = 2.314
-Epoch 278 Batch    0/5   train_loss = 2.302
-Epoch 280 Batch    0/5   train_loss = 2.300
-Epoch 282 Batch    0/5   train_loss = 2.300
-Epoch 284 Batch    0/5   train_loss = 2.283
-Epoch 286 Batch    0/5   train_loss = 2.246
-Epoch 288 Batch    0/5   train_loss = 2.246
-Epoch 290 Batch    0/5   train_loss = 2.210
-Epoch 292 Batch    0/5   train_loss = 2.203
-Epoch 294 Batch    0/5   train_loss = 2.185
-Epoch 296 Batch    0/5   train_loss = 2.170
-Epoch 298 Batch    0/5   train_loss = 2.150
-Epoch 300 Batch    0/5   train_loss = 2.130
-Epoch 302 Batch    0/5   train_loss = 2.132
-Epoch 304 Batch    0/5   train_loss = 2.113
-Epoch 306 Batch    0/5   train_loss = 2.083
-Epoch 308 Batch    0/5   train_loss = 2.073
-Epoch 310 Batch    0/5   train_loss = 2.060
-Epoch 312 Batch    0/5   train_loss = 2.072
-Epoch 314 Batch    0/5   train_loss = 2.081
-Epoch 316 Batch    0/5   train_loss = 2.031
-Epoch 318 Batch    0/5   train_loss = 2.007
-Epoch 320 Batch    0/5   train_loss = 2.001
-Epoch 322 Batch    0/5   train_loss = 1.987
-Epoch 324 Batch    0/5   train_loss = 1.978
-Epoch 326 Batch    0/5   train_loss = 1.963
-Epoch 328 Batch    0/5   train_loss = 1.952
-Epoch 330 Batch    0/5   train_loss = 1.932
-Epoch 332 Batch    0/5   train_loss = 1.918
-Epoch 334 Batch    0/5   train_loss = 1.898
-Epoch 336 Batch    0/5   train_loss = 1.885
-Epoch 338 Batch    0/5   train_loss = 1.872
-Epoch 340 Batch    0/5   train_loss = 1.864
-Epoch 342 Batch    0/5   train_loss = 1.867
-Epoch 344 Batch    0/5   train_loss = 1.848
-Epoch 346 Batch    0/5   train_loss = 1.821
-Epoch 348 Batch    0/5   train_loss = 1.814
-Epoch 350 Batch    0/5   train_loss = 1.788
-Epoch 352 Batch    0/5   train_loss = 1.806
-Epoch 354 Batch    0/5   train_loss = 1.790
-Epoch 356 Batch    0/5   train_loss = 1.761
-Epoch 358 Batch    0/5   train_loss = 1.745
-Epoch 360 Batch    0/5   train_loss = 1.735
-Epoch 362 Batch    0/5   train_loss = 1.718
-Epoch 364 Batch    0/5   train_loss = 1.747
-Epoch 366 Batch    0/5   train_loss = 1.726
-Epoch 368 Batch    0/5   train_loss = 1.753
-Epoch 370 Batch    0/5   train_loss = 1.703
-Epoch 372 Batch    0/5   train_loss = 1.662
-Epoch 374 Batch    0/5   train_loss = 1.643
-Epoch 376 Batch    0/5   train_loss = 1.624
-Epoch 378 Batch    0/5   train_loss = 1.617
-Epoch 380 Batch    0/5   train_loss = 1.598
-Epoch 382 Batch    0/5   train_loss = 1.613
-Epoch 384 Batch    0/5   train_loss = 1.601
-Epoch 386 Batch    0/5   train_loss = 1.584
-Epoch 388 Batch    0/5   train_loss = 1.569
-Epoch 390 Batch    0/5   train_loss = 1.557
-Epoch 392 Batch    0/5   train_loss = 1.534
-Epoch 394 Batch    0/5   train_loss = 1.534
-Epoch 396 Batch    0/5   train_loss = 1.520
-Epoch 398 Batch    0/5   train_loss = 1.547
-Epoch 400 Batch    0/5   train_loss = 1.545
-Epoch 402 Batch    0/5   train_loss = 1.521
-Epoch 404 Batch    0/5   train_loss = 1.486
-Epoch 406 Batch    0/5   train_loss = 1.469
-Epoch 408 Batch    0/5   train_loss = 1.458
-Epoch 410 Batch    0/5   train_loss = 1.442
-Epoch 412 Batch    0/5   train_loss = 1.431
-Epoch 414 Batch    0/5   train_loss = 1.410
-Epoch 416 Batch    0/5   train_loss = 1.411
-Epoch 418 Batch    0/5   train_loss = 1.412
-Epoch 420 Batch    0/5   train_loss = 1.398
-Epoch 422 Batch    0/5   train_loss = 1.417
-Epoch 424 Batch    0/5   train_loss = 1.381
-Epoch 426 Batch    0/5   train_loss = 1.355
-Epoch 428 Batch    0/5   train_loss = 1.354
-Epoch 430 Batch    0/5   train_loss = 1.338
-Epoch 432 Batch    0/5   train_loss = 1.321
-Epoch 434 Batch    0/5   train_loss = 1.326
-Epoch 436 Batch    0/5   train_loss = 1.324
-Epoch 438 Batch    0/5   train_loss = 1.314
-Epoch 440 Batch    0/5   train_loss = 1.292
-Epoch 442 Batch    0/5   train_loss = 1.279
-Epoch 444 Batch    0/5   train_loss = 1.259
-Epoch 446 Batch    0/5   train_loss = 1.283
-Epoch 448 Batch    0/5   train_loss = 1.274
-Epoch 450 Batch    0/5   train_loss = 1.251
-Epoch 452 Batch    0/5   train_loss = 1.279
-Epoch 454 Batch    0/5   train_loss = 1.249
-Epoch 456 Batch    0/5   train_loss = 1.214
-Epoch 458 Batch    0/5   train_loss = 1.196
-Epoch 460 Batch    0/5   train_loss = 1.185
-Epoch 462 Batch    0/5   train_loss = 1.174
-Epoch 464 Batch    0/5   train_loss = 1.158
-Epoch 466 Batch    0/5   train_loss = 1.195
-Epoch 468 Batch    0/5   train_loss = 1.158
-Epoch 470 Batch    0/5   train_loss = 1.145
-Epoch 472 Batch    0/5   train_loss = 1.160
-Epoch 474 Batch    0/5   train_loss = 1.123
-Epoch 476 Batch    0/5   train_loss = 1.118
-Epoch 478 Batch    0/5   train_loss = 1.103
-Epoch 480 Batch    0/5   train_loss = 1.088
-Epoch 482 Batch    0/5   train_loss = 1.089
-Epoch 484 Batch    0/5   train_loss = 1.094
-Epoch 486 Batch    0/5   train_loss = 1.092
-Epoch 488 Batch    0/5   train_loss = 1.106
-Epoch 490 Batch    0/5   train_loss = 1.053
-Epoch 492 Batch    0/5   train_loss = 1.052
-Epoch 494 Batch    0/5   train_loss = 1.046
-Epoch 496 Batch    0/5   train_loss = 1.030
-Epoch 498 Batch    0/5   train_loss = 1.021
-Epoch 500 Batch    0/5   train_loss = 1.020
-Epoch 502 Batch    0/5   train_loss = 1.046
-Epoch 504 Batch    0/5   train_loss = 1.040
-Epoch 506 Batch    0/5   train_loss = 1.026
-Epoch 508 Batch    0/5   train_loss = 0.982
-Epoch 510 Batch    0/5   train_loss = 0.969
-Epoch 512 Batch    0/5   train_loss = 0.962
-Epoch 514 Batch    0/5   train_loss = 0.946
-Epoch 516 Batch    0/5   train_loss = 0.941
-Epoch 518 Batch    0/5   train_loss = 0.951
-Epoch 520 Batch    0/5   train_loss = 0.945
-Epoch 522 Batch    0/5   train_loss = 0.952
-Epoch 524 Batch    0/5   train_loss = 0.931
-Epoch 526 Batch    0/5   train_loss = 0.905
-Epoch 528 Batch    0/5   train_loss = 0.893
-Epoch 530 Batch    0/5   train_loss = 0.881
-Epoch 532 Batch    0/5   train_loss = 0.882
-Epoch 534 Batch    0/5   train_loss = 0.871
-Epoch 536 Batch    0/5   train_loss = 0.904
-Epoch 538 Batch    0/5   train_loss = 0.893
-Epoch 540 Batch    0/5   train_loss = 0.884
-Epoch 542 Batch    0/5   train_loss = 0.864
-Epoch 544 Batch    0/5   train_loss = 0.854
-Epoch 546 Batch    0/5   train_loss = 0.854
-Epoch 548 Batch    0/5   train_loss = 0.836
-Epoch 550 Batch    0/5   train_loss = 0.816
-Epoch 552 Batch    0/5   train_loss = 0.829
-Epoch 554 Batch    0/5   train_loss = 0.813
-Epoch 556 Batch    0/5   train_loss = 0.798
-Epoch 558 Batch    0/5   train_loss = 0.808
-Epoch 560 Batch    0/5   train_loss = 0.789
-Epoch 562 Batch    0/5   train_loss = 0.791
-Epoch 564 Batch    0/5   train_loss = 0.779
-Epoch 566 Batch    0/5   train_loss = 0.765
-Epoch 568 Batch    0/5   train_loss = 0.746
-Epoch 570 Batch    0/5   train_loss = 0.746
-Epoch 572 Batch    0/5   train_loss = 0.733
-Epoch 574 Batch    0/5   train_loss = 0.733
-Epoch 576 Batch    0/5   train_loss = 0.752
-Epoch 578 Batch    0/5   train_loss = 0.727
-Epoch 580 Batch    0/5   train_loss = 0.712
-Epoch 582 Batch    0/5   train_loss = 0.711
-Epoch 584 Batch    0/5   train_loss = 0.708
-Epoch 586 Batch    0/5   train_loss = 0.695
-Epoch 588 Batch    0/5   train_loss = 0.699
-Epoch 590 Batch    0/5   train_loss = 0.688
-Epoch 592 Batch    0/5   train_loss = 0.682
-Epoch 594 Batch    0/5   train_loss = 0.703
-Epoch 596 Batch    0/5   train_loss = 0.681
-Epoch 598 Batch    0/5   train_loss = 0.672
-Epoch 600 Batch    0/5   train_loss = 0.678
-Epoch 602 Batch    0/5   train_loss = 0.657
-Epoch 604 Batch    0/5   train_loss = 0.652
-Epoch 606 Batch    0/5   train_loss = 0.627
-Epoch 608 Batch    0/5   train_loss = 0.623
-Epoch 610 Batch    0/5   train_loss = 0.633
-Epoch 612 Batch    0/5   train_loss = 0.608
-Epoch 614 Batch    0/5   train_loss = 0.614
-Epoch 616 Batch    0/5   train_loss = 0.620
-Epoch 618 Batch    0/5   train_loss = 0.610
-Epoch 620 Batch    0/5   train_loss = 0.596
-Epoch 622 Batch    0/5   train_loss = 0.596
-Epoch 624 Batch    0/5   train_loss = 0.605
-Epoch 626 Batch    0/5   train_loss = 0.574
-Epoch 628 Batch    0/5   train_loss = 0.581
-Epoch 630 Batch    0/5   train_loss = 0.571
-Epoch 632 Batch    0/5   train_loss = 0.563
-Epoch 634 Batch    0/5   train_loss = 0.582
-Epoch 636 Batch    0/5   train_loss = 0.579
-Epoch 638 Batch    0/5   train_loss = 0.562
-Epoch 640 Batch    0/5   train_loss = 0.549
-Epoch 642 Batch    0/5   train_loss = 0.540
-Epoch 644 Batch    0/5   train_loss = 0.520
-Epoch 646 Batch    0/5   train_loss = 0.515
-Epoch 648 Batch    0/5   train_loss = 0.509
-Epoch 650 Batch    0/5   train_loss = 0.509
-Epoch 652 Batch    0/5   train_loss = 0.527
-Epoch 654 Batch    0/5   train_loss = 0.524
-Epoch 656 Batch    0/5   train_loss = 0.509
-Epoch 658 Batch    0/5   train_loss = 0.523
-Epoch 660 Batch    0/5   train_loss = 0.502
-Epoch 662 Batch    0/5   train_loss = 0.477
-Epoch 664 Batch    0/5   train_loss = 0.473
-Epoch 666 Batch    0/5   train_loss = 0.463
-Epoch 668 Batch    0/5   train_loss = 0.457
-Epoch 670 Batch    0/5   train_loss = 0.455
-Epoch 672 Batch    0/5   train_loss = 0.459
-Epoch 674 Batch    0/5   train_loss = 0.475
-Epoch 676 Batch    0/5   train_loss = 0.471
-Epoch 678 Batch    0/5   train_loss = 0.455
-Epoch 680 Batch    0/5   train_loss = 0.443
-Epoch 682 Batch    0/5   train_loss = 0.456
-Epoch 684 Batch    0/5   train_loss = 0.440
-Epoch 686 Batch    0/5   train_loss = 0.421
-Epoch 688 Batch    0/5   train_loss = 0.413
-Epoch 690 Batch    0/5   train_loss = 0.405
-Epoch 692 Batch    0/5   train_loss = 0.401
-Epoch 694 Batch    0/5   train_loss = 0.404
-Epoch 696 Batch    0/5   train_loss = 0.400
-Epoch 698 Batch    0/5   train_loss = 0.428
-Epoch 700 Batch    0/5   train_loss = 0.451
-Epoch 702 Batch    0/5   train_loss = 0.426
-Epoch 704 Batch    0/5   train_loss = 0.410
-Epoch 706 Batch    0/5   train_loss = 0.422
-Epoch 708 Batch    0/5   train_loss = 0.398
-Epoch 710 Batch    0/5   train_loss = 0.377
-Epoch 712 Batch    0/5   train_loss = 0.368
-Epoch 714 Batch    0/5   train_loss = 0.358
-Epoch 716 Batch    0/5   train_loss = 0.352
-Epoch 718 Batch    0/5   train_loss = 0.349
-Epoch 720 Batch    0/5   train_loss = 0.344
-Epoch 722 Batch    0/5   train_loss = 0.346
-Epoch 724 Batch    0/5   train_loss = 0.345
-Epoch 726 Batch    0/5   train_loss = 0.337
-Epoch 728 Batch    0/5   train_loss = 0.345
-Epoch 730 Batch    0/5   train_loss = 0.348
-Epoch 732 Batch    0/5   train_loss = 0.358
-Epoch 734 Batch    0/5   train_loss = 0.346
-Epoch 736 Batch    0/5   train_loss = 0.337
-Epoch 738 Batch    0/5   train_loss = 0.329
-Epoch 740 Batch    0/5   train_loss = 0.320
-Epoch 742 Batch    0/5   train_loss = 0.323
-Epoch 744 Batch    0/5   train_loss = 0.316
-Epoch 746 Batch    0/5   train_loss = 0.304
-Epoch 748 Batch    0/5   train_loss = 0.299
-Epoch 750 Batch    0/5   train_loss = 0.292
-Epoch 752 Batch    0/5   train_loss = 0.288
-Epoch 754 Batch    0/5   train_loss = 0.289
-Epoch 756 Batch    0/5   train_loss = 0.284
-Epoch 758 Batch    0/5   train_loss = 0.290
-Epoch 760 Batch    0/5   train_loss = 0.304
-Epoch 762 Batch    0/5   train_loss = 0.311
-Epoch 764 Batch    0/5   train_loss = 0.405
-Epoch 766 Batch    0/5   train_loss = 0.390
-Epoch 768 Batch    0/5   train_loss = 0.344
-Epoch 770 Batch    0/5   train_loss = 0.320
-Epoch 772 Batch    0/5   train_loss = 0.280
-Epoch 774 Batch    0/5   train_loss = 0.265
-Epoch 776 Batch    0/5   train_loss = 0.258
-Epoch 778 Batch    0/5   train_loss = 0.252
-Epoch 780 Batch    0/5   train_loss = 0.247
-Epoch 782 Batch    0/5   train_loss = 0.243
-Epoch 784 Batch    0/5   train_loss = 0.240
-Epoch 786 Batch    0/5   train_loss = 0.237
-Epoch 788 Batch    0/5   train_loss = 0.233
-Epoch 790 Batch    0/5   train_loss = 0.231
-Epoch 792 Batch    0/5   train_loss = 0.229
-Epoch 794 Batch    0/5   train_loss = 0.225
-Epoch 796 Batch    0/5   train_loss = 0.230
-Epoch 798 Batch    0/5   train_loss = 0.226
-Epoch 800 Batch    0/5   train_loss = 0.222
-Epoch 802 Batch    0/5   train_loss = 0.237
-Epoch 804 Batch    0/5   train_loss = 0.225
-Epoch 806 Batch    0/5   train_loss = 0.225
-Epoch 808 Batch    0/5   train_loss = 0.245
-Epoch 810 Batch    0/5   train_loss = 0.227
-Epoch 812 Batch    0/5   train_loss = 0.210
-Epoch 814 Batch    0/5   train_loss = 0.206
-Epoch 816 Batch    0/5   train_loss = 0.202
-Epoch 818 Batch    0/5   train_loss = 0.198
-Epoch 820 Batch    0/5   train_loss = 0.195
-Epoch 822 Batch    0/5   train_loss = 0.192
-Epoch 824 Batch    0/5   train_loss = 0.189
-Epoch 826 Batch    0/5   train_loss = 0.189
-Epoch 828 Batch    0/5   train_loss = 0.187
-Epoch 830 Batch    0/5   train_loss = 0.186
-Epoch 832 Batch    0/5   train_loss = 0.187
-Epoch 834 Batch    0/5   train_loss = 0.189
-Epoch 836 Batch    0/5   train_loss = 0.189
-Epoch 838 Batch    0/5   train_loss = 0.197
-Epoch 840 Batch    0/5   train_loss = 0.207
-Epoch 842 Batch    0/5   train_loss = 0.196
-Epoch 844 Batch    0/5   train_loss = 0.187
-Epoch 846 Batch    0/5   train_loss = 0.197
-Epoch 848 Batch    0/5   train_loss = 0.189
-Epoch 850 Batch    0/5   train_loss = 0.176
-Epoch 852 Batch    0/5   train_loss = 0.171
-Epoch 854 Batch    0/5   train_loss = 0.164
-Epoch 856 Batch    0/5   train_loss = 0.161
-Epoch 858 Batch    0/5   train_loss = 0.157
-Epoch 860 Batch    0/5   train_loss = 0.154
-Epoch 862 Batch    0/5   train_loss = 0.152
-Epoch 864 Batch    0/5   train_loss = 0.150
-Epoch 866 Batch    0/5   train_loss = 0.148
-Epoch 868 Batch    0/5   train_loss = 0.146
-Epoch 870 Batch    0/5   train_loss = 0.145
-Epoch 872 Batch    0/5   train_loss = 0.145
-Epoch 874 Batch    0/5   train_loss = 0.142
-Epoch 876 Batch    0/5   train_loss = 0.143
-Epoch 878 Batch    0/5   train_loss = 0.159
-Epoch 880 Batch    0/5   train_loss = 0.145
-Epoch 882 Batch    0/5   train_loss = 0.161
-Epoch 884 Batch    0/5   train_loss = 0.211
-Epoch 886 Batch    0/5   train_loss = 0.196
-Epoch 888 Batch    0/5   train_loss = 0.335
-Epoch 890 Batch    0/5   train_loss = 0.325
-Epoch 892 Batch    0/5   train_loss = 0.279
-Epoch 894 Batch    0/5   train_loss = 0.244
-Epoch 896 Batch    0/5   train_loss = 0.214
-Epoch 898 Batch    0/5   train_loss = 0.174
-Epoch 900 Batch    0/5   train_loss = 0.147
-Epoch 902 Batch    0/5   train_loss = 0.138
-Epoch 904 Batch    0/5   train_loss = 0.131
-Epoch 906 Batch    0/5   train_loss = 0.128
-Epoch 908 Batch    0/5   train_loss = 0.125
-Epoch 910 Batch    0/5   train_loss = 0.123
-Epoch 912 Batch    0/5   train_loss = 0.121
-Epoch 914 Batch    0/5   train_loss = 0.119
-Epoch 916 Batch    0/5   train_loss = 0.117
-Epoch 918 Batch    0/5   train_loss = 0.116
-Epoch 920 Batch    0/5   train_loss = 0.114
-Epoch 922 Batch    0/5   train_loss = 0.113
-Epoch 924 Batch    0/5   train_loss = 0.112
-Epoch 926 Batch    0/5   train_loss = 0.111
-Epoch 928 Batch    0/5   train_loss = 0.109
-Epoch 930 Batch    0/5   train_loss = 0.108
-Epoch 932 Batch    0/5   train_loss = 0.107
-Epoch 934 Batch    0/5   train_loss = 0.106
-Epoch 936 Batch    0/5   train_loss = 0.105
-Epoch 938 Batch    0/5   train_loss = 0.103
-Epoch 940 Batch    0/5   train_loss = 0.102
-Epoch 942 Batch    0/5   train_loss = 0.101
-Epoch 944 Batch    0/5   train_loss = 0.100
-Epoch 946 Batch    0/5   train_loss = 0.099
-Epoch 948 Batch    0/5   train_loss = 0.098
-Epoch 950 Batch    0/5   train_loss = 0.097
-Epoch 952 Batch    0/5   train_loss = 0.096
-Epoch 954 Batch    0/5   train_loss = 0.095
-Epoch 956 Batch    0/5   train_loss = 0.094
-Epoch 958 Batch    0/5   train_loss = 0.094
-Epoch 960 Batch    0/5   train_loss = 0.093
-Epoch 962 Batch    0/5   train_loss = 0.092
-Epoch 964 Batch    0/5   train_loss = 0.091
-Epoch 966 Batch    0/5   train_loss = 0.090
-Epoch 968 Batch    0/5   train_loss = 0.089
-Epoch 970 Batch    0/5   train_loss = 0.088
-Epoch 972 Batch    0/5   train_loss = 0.088
-Epoch 974 Batch    0/5   train_loss = 0.087
-Epoch 976 Batch    0/5   train_loss = 0.086
-Epoch 978 Batch    0/5   train_loss = 0.085
-Epoch 980 Batch    0/5   train_loss = 0.084
-Epoch 982 Batch    0/5   train_loss = 0.083
-Epoch 984 Batch    0/5   train_loss = 0.083
-Epoch 986 Batch    0/5   train_loss = 0.082
-Epoch 988 Batch    0/5   train_loss = 0.081
-Epoch 990 Batch    0/5   train_loss = 0.080
-Epoch 992 Batch    0/5   train_loss = 0.080
-Epoch 994 Batch    0/5   train_loss = 0.079
-Epoch 996 Batch    0/5   train_loss = 0.078
-Epoch 998 Batch    0/5   train_loss = 0.078
+<pre>n_batches 24
+
+Epoch   0 Batch    0/24   train_loss = 8.821
+Epoch   0 Batch   10/24   train_loss = 6.639
+Epoch   0 Batch   20/24   train_loss = 6.516
+Epoch   1 Batch    6/24   train_loss = 6.023
+Epoch   1 Batch   16/24   train_loss = 6.070
+Epoch   2 Batch    2/24   train_loss = 5.976
+Epoch   2 Batch   12/24   train_loss = 6.045
+Epoch   2 Batch   22/24   train_loss = 5.987
+Epoch   3 Batch    8/24   train_loss = 5.959
+Epoch   3 Batch   18/24   train_loss = 5.839
+Epoch   4 Batch    4/24   train_loss = 5.702
+Epoch   4 Batch   14/24   train_loss = 5.684
+Epoch   5 Batch    0/24   train_loss = 5.578
+Epoch   5 Batch   10/24   train_loss = 5.687
+Epoch   5 Batch   20/24   train_loss = 5.597
+Epoch   6 Batch    6/24   train_loss = 5.504
+Epoch   6 Batch   16/24   train_loss = 5.442
+Epoch   7 Batch    2/24   train_loss = 5.276
+Epoch   7 Batch   12/24   train_loss = 5.422
+Epoch   7 Batch   22/24   train_loss = 5.317
+Epoch   8 Batch    8/24   train_loss = 5.296
+Epoch   8 Batch   18/24   train_loss = 5.165
+Epoch   9 Batch    4/24   train_loss = 5.019
+Epoch   9 Batch   14/24   train_loss = 4.972
+Epoch  10 Batch    0/24   train_loss = 4.883
+Epoch  10 Batch   10/24   train_loss = 4.991
+Epoch  10 Batch   20/24   train_loss = 4.891
+Epoch  11 Batch    6/24   train_loss = 4.799
+Epoch  11 Batch   16/24   train_loss = 4.764
+Epoch  12 Batch    2/24   train_loss = 4.581
+Epoch  12 Batch   12/24   train_loss = 4.673
+Epoch  12 Batch   22/24   train_loss = 4.586
+Epoch  13 Batch    8/24   train_loss = 4.603
+Epoch  13 Batch   18/24   train_loss = 4.454
+Epoch  14 Batch    4/24   train_loss = 4.280
+Epoch  14 Batch   14/24   train_loss = 4.301
+Epoch  15 Batch    0/24   train_loss = 4.275
+Epoch  15 Batch   10/24   train_loss = 4.371
+Epoch  15 Batch   20/24   train_loss = 4.248
+Epoch  16 Batch    6/24   train_loss = 4.220
+Epoch  16 Batch   16/24   train_loss = 4.169
+Epoch  17 Batch    2/24   train_loss = 3.998
+Epoch  17 Batch   12/24   train_loss = 4.083
+Epoch  17 Batch   22/24   train_loss = 3.965
+Epoch  18 Batch    8/24   train_loss = 3.985
+Epoch  18 Batch   18/24   train_loss = 3.911
+Epoch  19 Batch    4/24   train_loss = 3.733
+Epoch  19 Batch   14/24   train_loss = 3.779
+Epoch  20 Batch    0/24   train_loss = 3.714
+Epoch  20 Batch   10/24   train_loss = 3.793
+Epoch  20 Batch   20/24   train_loss = 3.735
+Epoch  21 Batch    6/24   train_loss = 3.713
+Epoch  21 Batch   16/24   train_loss = 3.677
+Epoch  22 Batch    2/24   train_loss = 3.518
+Epoch  22 Batch   12/24   train_loss = 3.561
+Epoch  22 Batch   22/24   train_loss = 3.501
+Epoch  23 Batch    8/24   train_loss = 3.499
+Epoch  23 Batch   18/24   train_loss = 3.451
+Epoch  24 Batch    4/24   train_loss = 3.291
+Epoch  24 Batch   14/24   train_loss = 3.295
+Epoch  25 Batch    0/24   train_loss = 3.271
+Epoch  25 Batch   10/24   train_loss = 3.331
+Epoch  25 Batch   20/24   train_loss = 3.256
+Epoch  26 Batch    6/24   train_loss = 3.238
+Epoch  26 Batch   16/24   train_loss = 3.167
+Epoch  27 Batch    2/24   train_loss = 3.038
+Epoch  27 Batch   12/24   train_loss = 3.106
+Epoch  27 Batch   22/24   train_loss = 2.985
+Epoch  28 Batch    8/24   train_loss = 3.011
+Epoch  28 Batch   18/24   train_loss = 2.991
+Epoch  29 Batch    4/24   train_loss = 2.907
+Epoch  29 Batch   14/24   train_loss = 2.891
+Epoch  30 Batch    0/24   train_loss = 2.911
+Epoch  30 Batch   10/24   train_loss = 2.948
+Epoch  30 Batch   20/24   train_loss = 2.903
+Epoch  31 Batch    6/24   train_loss = 2.885
+Epoch  31 Batch   16/24   train_loss = 2.808
+Epoch  32 Batch    2/24   train_loss = 2.670
+Epoch  32 Batch   12/24   train_loss = 2.701
+Epoch  32 Batch   22/24   train_loss = 2.591
+Epoch  33 Batch    8/24   train_loss = 2.579
+Epoch  33 Batch   18/24   train_loss = 2.603
+Epoch  34 Batch    4/24   train_loss = 2.498
+Epoch  34 Batch   14/24   train_loss = 2.504
+Epoch  35 Batch    0/24   train_loss = 2.482
+Epoch  35 Batch   10/24   train_loss = 2.530
+Epoch  35 Batch   20/24   train_loss = 2.489
+Epoch  36 Batch    6/24   train_loss = 2.486
+Epoch  36 Batch   16/24   train_loss = 2.417
+Epoch  37 Batch    2/24   train_loss = 2.320
+Epoch  37 Batch   12/24   train_loss = 2.348
+Epoch  37 Batch   22/24   train_loss = 2.287
+Epoch  38 Batch    8/24   train_loss = 2.245
+Epoch  38 Batch   18/24   train_loss = 2.322
+Epoch  39 Batch    4/24   train_loss = 2.230
+Epoch  39 Batch   14/24   train_loss = 2.234
+Epoch  40 Batch    0/24   train_loss = 2.223
+Epoch  40 Batch   10/24   train_loss = 2.263
+Epoch  40 Batch   20/24   train_loss = 2.267
+Epoch  41 Batch    6/24   train_loss = 2.251
+Epoch  41 Batch   16/24   train_loss = 2.179
+Epoch  42 Batch    2/24   train_loss = 2.121
+Epoch  42 Batch   12/24   train_loss = 2.155
+Epoch  42 Batch   22/24   train_loss = 2.100
+Epoch  43 Batch    8/24   train_loss = 2.031
+Epoch  43 Batch   18/24   train_loss = 2.134
+Epoch  44 Batch    4/24   train_loss = 2.016
+Epoch  44 Batch   14/24   train_loss = 2.027
+Epoch  45 Batch    0/24   train_loss = 2.049
+Epoch  45 Batch   10/24   train_loss = 2.042
+Epoch  45 Batch   20/24   train_loss = 2.060
+Epoch  46 Batch    6/24   train_loss = 2.031
+Epoch  46 Batch   16/24   train_loss = 1.943
+Epoch  47 Batch    2/24   train_loss = 1.888
+Epoch  47 Batch   12/24   train_loss = 1.901
+Epoch  47 Batch   22/24   train_loss = 1.881
+Epoch  48 Batch    8/24   train_loss = 1.794
+Epoch  48 Batch   18/24   train_loss = 1.910
+Epoch  49 Batch    4/24   train_loss = 1.802
+Epoch  49 Batch   14/24   train_loss = 1.839
+Epoch  50 Batch    0/24   train_loss = 1.860
+Epoch  50 Batch   10/24   train_loss = 1.836
+Epoch  50 Batch   20/24   train_loss = 1.834
+Epoch  51 Batch    6/24   train_loss = 1.841
+Epoch  51 Batch   16/24   train_loss = 1.803
+Epoch  52 Batch    2/24   train_loss = 1.735
+Epoch  52 Batch   12/24   train_loss = 1.723
+Epoch  52 Batch   22/24   train_loss = 1.692
+Epoch  53 Batch    8/24   train_loss = 1.636
+Epoch  53 Batch   18/24   train_loss = 1.754
+Epoch  54 Batch    4/24   train_loss = 1.671
+Epoch  54 Batch   14/24   train_loss = 1.657
+Epoch  55 Batch    0/24   train_loss = 1.722
+Epoch  55 Batch   10/24   train_loss = 1.697
+Epoch  55 Batch   20/24   train_loss = 1.719
+Epoch  56 Batch    6/24   train_loss = 1.689
+Epoch  56 Batch   16/24   train_loss = 1.624
+Epoch  57 Batch    2/24   train_loss = 1.592
+Epoch  57 Batch   12/24   train_loss = 1.616
+Epoch  57 Batch   22/24   train_loss = 1.556
+Epoch  58 Batch    8/24   train_loss = 1.525
+Epoch  58 Batch   18/24   train_loss = 1.592
+Epoch  59 Batch    4/24   train_loss = 1.547
+Epoch  59 Batch   14/24   train_loss = 1.549
+Epoch  60 Batch    0/24   train_loss = 1.570
+Epoch  60 Batch   10/24   train_loss = 1.530
+Epoch  60 Batch   20/24   train_loss = 1.580
+Epoch  61 Batch    6/24   train_loss = 1.540
+Epoch  61 Batch   16/24   train_loss = 1.496
+Epoch  62 Batch    2/24   train_loss = 1.459
+Epoch  62 Batch   12/24   train_loss = 1.450
+Epoch  62 Batch   22/24   train_loss = 1.432
+Epoch  63 Batch    8/24   train_loss = 1.387
+Epoch  63 Batch   18/24   train_loss = 1.483
+Epoch  64 Batch    4/24   train_loss = 1.414
+Epoch  64 Batch   14/24   train_loss = 1.430
+Epoch  65 Batch    0/24   train_loss = 1.452
+Epoch  65 Batch   10/24   train_loss = 1.433
+Epoch  65 Batch   20/24   train_loss = 1.496
+Epoch  66 Batch    6/24   train_loss = 1.447
+Epoch  66 Batch   16/24   train_loss = 1.436
+Epoch  67 Batch    2/24   train_loss = 1.398
+Epoch  67 Batch   12/24   train_loss = 1.409
+Epoch  67 Batch   22/24   train_loss = 1.404
+Epoch  68 Batch    8/24   train_loss = 1.339
+Epoch  68 Batch   18/24   train_loss = 1.429
+Epoch  69 Batch    4/24   train_loss = 1.371
+Epoch  69 Batch   14/24   train_loss = 1.402
+Epoch  70 Batch    0/24   train_loss = 1.439
+Epoch  70 Batch   10/24   train_loss = 1.382
+Epoch  70 Batch   20/24   train_loss = 1.436
+Epoch  71 Batch    6/24   train_loss = 1.411
+Epoch  71 Batch   16/24   train_loss = 1.379
+Epoch  72 Batch    2/24   train_loss = 1.347
+Epoch  72 Batch   12/24   train_loss = 1.326
+Epoch  72 Batch   22/24   train_loss = 1.335
+Epoch  73 Batch    8/24   train_loss = 1.284
+Epoch  73 Batch   18/24   train_loss = 1.369
+Epoch  74 Batch    4/24   train_loss = 1.308
+Epoch  74 Batch   14/24   train_loss = 1.305
+Epoch  75 Batch    0/24   train_loss = 1.329
+Epoch  75 Batch   10/24   train_loss = 1.291
+Epoch  75 Batch   20/24   train_loss = 1.345
+Epoch  76 Batch    6/24   train_loss = 1.303
+Epoch  76 Batch   16/24   train_loss = 1.287
+Epoch  77 Batch    2/24   train_loss = 1.260
+Epoch  77 Batch   12/24   train_loss = 1.229
+Epoch  77 Batch   22/24   train_loss = 1.228
+Epoch  78 Batch    8/24   train_loss = 1.176
+Epoch  78 Batch   18/24   train_loss = 1.247
+Epoch  79 Batch    4/24   train_loss = 1.176
+Epoch  79 Batch   14/24   train_loss = 1.211
+Epoch  80 Batch    0/24   train_loss = 1.255
+Epoch  80 Batch   10/24   train_loss = 1.214
+Epoch  80 Batch   20/24   train_loss = 1.233
+Epoch  81 Batch    6/24   train_loss = 1.194
+Epoch  81 Batch   16/24   train_loss = 1.173
+Epoch  82 Batch    2/24   train_loss = 1.179
+Epoch  82 Batch   12/24   train_loss = 1.115
+Epoch  82 Batch   22/24   train_loss = 1.123
+Epoch  83 Batch    8/24   train_loss = 1.058
+Epoch  83 Batch   18/24   train_loss = 1.138
+Epoch  84 Batch    4/24   train_loss = 1.085
+Epoch  84 Batch   14/24   train_loss = 1.120
+Epoch  85 Batch    0/24   train_loss = 1.157
+Epoch  85 Batch   10/24   train_loss = 1.081
+Epoch  85 Batch   20/24   train_loss = 1.157
+Epoch  86 Batch    6/24   train_loss = 1.129
+Epoch  86 Batch   16/24   train_loss = 1.081
+Epoch  87 Batch    2/24   train_loss = 1.078
+Epoch  87 Batch   12/24   train_loss = 1.033
+Epoch  87 Batch   22/24   train_loss = 1.048
+Epoch  88 Batch    8/24   train_loss = 1.021
+Epoch  88 Batch   18/24   train_loss = 1.088
+Epoch  89 Batch    4/24   train_loss = 1.019
+Epoch  89 Batch   14/24   train_loss = 1.046
+Epoch  90 Batch    0/24   train_loss = 1.085
+Epoch  90 Batch   10/24   train_loss = 1.045
+Epoch  90 Batch   20/24   train_loss = 1.093
+Epoch  91 Batch    6/24   train_loss = 1.056
+Epoch  91 Batch   16/24   train_loss = 1.035
+Epoch  92 Batch    2/24   train_loss = 1.047
+Epoch  92 Batch   12/24   train_loss = 1.002
+Epoch  92 Batch   22/24   train_loss = 1.011
+Epoch  93 Batch    8/24   train_loss = 0.952
+Epoch  93 Batch   18/24   train_loss = 1.036
+Epoch  94 Batch    4/24   train_loss = 0.982
+Epoch  94 Batch   14/24   train_loss = 1.020
+Epoch  95 Batch    0/24   train_loss = 1.029
+Epoch  95 Batch   10/24   train_loss = 0.961
+Epoch  95 Batch   20/24   train_loss = 0.999
+Epoch  96 Batch    6/24   train_loss = 0.982
+Epoch  96 Batch   16/24   train_loss = 0.979
+Epoch  97 Batch    2/24   train_loss = 0.980
+Epoch  97 Batch   12/24   train_loss = 0.938
+Epoch  97 Batch   22/24   train_loss = 0.939
+Epoch  98 Batch    8/24   train_loss = 0.902
+Epoch  98 Batch   18/24   train_loss = 0.976
+Epoch  99 Batch    4/24   train_loss = 0.920
+Epoch  99 Batch   14/24   train_loss = 0.949
 Model Trained and Saved
 </pre>
 </div>
@@ -13378,7 +13576,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[198]:</div>
+<div class="prompt input_prompt">In&nbsp;[111]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -13404,7 +13602,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[272]:</div>
+<div class="prompt input_prompt">In&nbsp;[112]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
@@ -13443,7 +13641,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[273]:</div>
+<div class="prompt input_prompt">In&nbsp;[113]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_tensors</span><span class="p">(</span><span class="n">loaded_graph</span><span class="p">):</span>
@@ -13499,7 +13697,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[274]:</div>
+<div class="prompt input_prompt">In&nbsp;[121]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">pick_word</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">int_to_vocab</span><span class="p">):</span>
@@ -13510,9 +13708,11 @@ Model Trained and Saved
 <span class="sd">    :return: String of the predicted word</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">word</span> <span class="o">=</span> <span class="n">int_to_vocab</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)]</span>
+    <span class="n">word_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">probabilities</span><span class="p">)</span>
+    <span class="n">word</span> <span class="o">=</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">word_p</span><span class="p">)</span>
     
-    <span class="k">return</span> <span class="n">word</span>
+    
+    <span class="k">return</span> <span class="n">int_to_vocab</span><span class="p">[</span><span class="n">word</span><span class="p">]</span>
 
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -13554,7 +13754,7 @@ Model Trained and Saved
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[275]:</div>
+<div class="prompt input_prompt">In&nbsp;[122]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">gen_length</span> <span class="o">=</span> <span class="mi">200</span>
@@ -13615,7 +13815,28 @@ Model Trained and Saved
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>moe_szyslak: sizes good-looking slap detective_homer_simpson: takin&#39; cesss planning parrot smoke parrot sizes frustrated choked slap gesture elmo&#39;s jerry duff&#39;s butterball officials sizes themselves gesture whiny irrelevant paintings continuing huddle tony butterball worst jerry neighborhood slap slap slap detective_homer_simpson: meatpies crooks sail slap slap slap sizes worst mr slap worst gesture parrot calendars bathed schnapps butterball stuck jerry dash my-y-y-y-y-y slap slap slap detective_homer_simpson: rain gesture bashir&#39;s jerry longest slap slap slap detective_homer_simpson: realize gesture parrot neighborhood jerry dad&#39;s poet presided scrutinizes presided rope neighborhood booth detective_homer_simpson: enjoyed gesture electronic sam: jerry dash my-y-y-y-y-y butterball protestantism dash my-y-y-y-y-y friendly dash happiness agreement slap protestantism muttering muttering sugar-free parrot is: abandon fudd scrutinizes detective_homer_simpson: itself duff&#39;s butterball drinker slap muttering shaky slap cuff giant face knockin&#39; tv-station_announcer: that&#39;s slap detective_homer_simpson: celebrate rubbed 2nd_voice_on_transmitter: further rubbed usual laramie bunch slap detective_homer_simpson: itself gesture child jerry premise poet sarcastic slap detective_homer_simpson: meatpies skydiving scrutinizes scream renee: scrutinizes detective_homer_simpson: itself lenses butterball tapered smokin&#39; 2nd_voice_on_transmitter: slap detective_homer_simpson: detective_homer_simpson: detective_homer_simpson: aims always butterball oh-so-sophisticated wine dislike sizes bury gang butterball renee: rope laramie themselves beings slap detective_homer_simpson: rain indicates butterball stunned slap detective_homer_simpson: rain arts butterball ratted 2nd_voice_on_transmitter: pepsi oh-so-sophisticated planning booth rope presided rope abandon worst
+<pre>moe_szyslak: okay, you can&#39;t sell it till it blows at the mr.
+moe_szyslak: what?
+homer_simpson: do you goin&#39; homer?
+moe_szyslak: oh, why don&#39;t you had? he&#39;s just a day?
+homer_simpson: marge if it isn&#39;t little call? i&#39;m gonna invite me out.
+barney_gumble:(to homer) all knows me? hey, but all day it&#39;s everyone anymore.
+moe_szyslak: aw, behind not one about us, like how about the last guy old.
+lenny_leonard: hey, what that can hide!
+seymour_skinner: i had to my time you say, big day...
+kirk_van_houten: oh, nuts.
+homer_simpson: when i&#39;m not your best friend because i&#39;m gonna plotz.
+homer_simpson: don&#39;t be lost in a grampa.
+homer_simpson: oh, right. it wasn&#39;t up from the&#34; sex on the car.
+moe_szyslak: ah, he&#39;s down for a man. to be a friend.
+
+
+homer_simpson:(moans) we&#39;re sure is.
+
+
+
+
+homer_simpson:(to tv) hey, hibachi head.
 </pre>
 </div>
 </div>
